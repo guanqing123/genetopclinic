@@ -1,17 +1,17 @@
 <template>
   <div id="root" style="height: 100%">
     <view-box ref="viewBox">
-      <div>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/>a<br/></div>
+      <router-view />
     </view-box>
     <tabbar slot="bottom" style="position: fixed">
-      <tabbar-item>
-        <img slot="icon" src="../../assets/icon-home.png"/>
-        <img slot="icon-active" src="../../assets/icon-home-active.png"/>
+      <tabbar-item :selected="$route.name==='Home'" @on-item-click="itemClick('Home')">
+        <img slot="icon" src="../../assets/icon_home.png"/>
+        <img slot="icon-active" src="../../assets/icon_home_active.png"/>
         <p slot="label">首页</p>
       </tabbar-item>
-      <tabbar-item>
-        <img slot="icon" src="../../assets/icon-home.png"/>
-        <img slot="icon-active" src="../../assets/icon-home-active.png"/>
+      <tabbar-item :selected="$route.name==='PersonCenter'" @on-item-click="itemClick('PersonCenter')">
+        <img slot="icon" src="../../assets/icon_personcenter.png"/>
+        <img slot="icon-active" src="../../assets/icon_personcenter_active.png"/>
         <p slot="label">个人中心</p>
       </tabbar-item>
     </tabbar>
@@ -20,11 +20,22 @@
 
 <script>
 import { ViewBox, Tabbar, TabbarItem } from 'vux'
-import Tab from "vux/src/components/tab/tab";
 export default {
   name: "root",
+  data(){
+    return {
+
+    }
+  },
+  methods: {
+    itemClick:function (to) {
+      this.$router.push({path: to})
+    }
+  },
+  mounted() {
+    console.log(this.$route.name)
+  },
   components: {
-    Tab,
     ViewBox,
     Tabbar,
     TabbarItem
@@ -37,5 +48,8 @@ html, body {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
+}
+.weui-tabbar__label {
+  color: #000000;
 }
 </style>

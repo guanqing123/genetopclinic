@@ -1,5 +1,7 @@
 <template>
-
+  <div id="personcenter">
+    this is personcenter
+  </div>
 </template>
 
 <script>
