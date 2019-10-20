@@ -6,12 +6,12 @@
     <tabbar slot="bottom" style="position: fixed">
       <tabbar-item :selected="$route.name==='Home'" @on-item-click="itemClick('Home')">
         <img slot="icon" src="../../assets/icon_home.png"/>
-        <img slot="icon-active" src="../../assets/icon_home_active.png"/>
+        <img slot="icon-active" src="../../assets/icon_home_selected.png"/>
         <p slot="label">首页</p>
       </tabbar-item>
       <tabbar-item :selected="$route.name==='PersonCenter'" @on-item-click="itemClick('PersonCenter')">
         <img slot="icon" src="../../assets/icon_personcenter.png"/>
-        <img slot="icon-active" src="../../assets/icon_personcenter_active.png"/>
+        <img slot="icon-active" src="../../assets/icon_personcenter.selected.png"/>
         <p slot="label">个人中心</p>
       </tabbar-item>
     </tabbar>
