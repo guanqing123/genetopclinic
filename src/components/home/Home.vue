@@ -16,7 +16,7 @@
       />
       <box gap="5px 0px 10px 10px">
         <div class="result-info">共获得约<span class="number-info" v-html="total"></span>条结果</div>
-        <div class="project-item" v-for="project in projectList" :key="project.id">
+        <div class="project-item" v-for="project in projectList" :key="project.id" @click="goProject(project)">
           <div class="img-box">
             <img :src="project.fileRealPath"/>
           </div>
@@ -57,7 +57,6 @@ export default {
   created(){
     this.$axios.get('/homepage/getHomePageList')
       .then(res => {
-        console.log(JSON.stringify(res))
         this.swiperList = res.data.data.map(item =>{
           return {
             url: '/PersonCenter',
@@ -65,12 +64,19 @@ export default {
             title: item.title
           }
         })
-        console.log(this.swiperList)
       })
       .catch(err => console.log(err))
     this.getProjectList();
   },
   methods: {
+    // 跳转详情
+    goProject: function (project) {
+      console.log(project)
+      this.$router.push({
+        name: 'Project',
+        params: {projectId: project.id, title: project.title}
+      })
+    },
     beginSearch: function (value) {
       alert('beginSearch:'+value+'searchText:'+this.searchText)
     },
@@ -81,10 +87,14 @@ export default {
     doRefresh: function () {
       var self = this;
       self.$set(self, 'currentPage', 1);
-      alert('doRefresh')
+      self.$set(self, 'pages', 0);
+      self.$set(self, 'total', 0);
+      self.$set(self, 'projectList', []);
+      self.getProjectList(); // 开始查询
     },
     nextPage: function () {
-      alert('nextPage')
+      var self = this;
+      self.getProjectList();
     },
     getProjectList() {
       var self = this;
@@ -98,30 +108,25 @@ export default {
           pageSize: 10
         }
       }).then(res => {
-        console.log(self.$judgecode(res))
-        if (self.$judgecode(res)){
-          let data = res.data.data
-          this.projectList = data.list
-          this.total = data.total
-          this.pages = data.pages
+        if (self.$judgecode(res) === 1){
+          let data = res.data.data;
+          self.total = data.total
+          self.pages = data.pages
+          if (self.currentPage === 1) {
+            self.$set(self, 'projectList', data.list);
+          } else {
+            let newArray = self.projectList.concat(data.list);
+            self.$set(self, 'projectList', newArray);
+          }
+          self.currentPage ++
+          // 关闭下拉
+          self.$refs['pull'].closePullDown();
         }
         this.$vux.loading.hide()
       }).catch(err => {
         console.log(err)
         this.$vux.loading.hide()
       })
-      /*this.$axios.get('/sellactivity/getSellingActivityFenye?userid=180321105710&pageNum=1&pageSize=10')
-        .then(res => {
-          console.log(res)
-          this.projectList = res.data.data.list
-          this.total = res.data.data.total
-          this.pages = res.data.data.pages
-          this.$vux.loading.hide()
-        })
-        .catch(err => {
-          console.log(err)
-          this.$vux.loading.hide()
-        })*/
     }
   },
   components: {
@@ -137,6 +142,8 @@ export default {
 <style scoped lang="less">
 @width114: 114px;
 @width94: 94px;
+@fontColor: rgb(153, 153, 153);
+
 .home {
   .result-info {
     border-bottom: 1px solid rgba(153,153,153,0.3);
@@ -188,6 +195,7 @@ export default {
       text-overflow: ellipsis;
       font-size: 14px;
       height: 22px;
+      color: @fontColor;
     }
     .desc {
       white-space: nowrap;
@@ -195,6 +203,7 @@ export default {
       text-overflow: ellipsis;
       font-size: 14px;
       height: 22px;
+      color: @fontColor;
     }
     .state {
       background-color: rgb(60,176,52);
@@ -213,6 +222,7 @@ export default {
       font-size: 14px;
       height: 25px;
       line-height: 25px;
+      color: @fontColor;
     }
   }
 }

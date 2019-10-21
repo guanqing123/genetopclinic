@@ -30,7 +30,7 @@ Installer.install = function (Vue) {
     if (res.data.code != '00000') {
       this.$vux.toast.show({
         text: res.data.msg,
-        type: 'warn',
+        type: 'text',
         position: 'top'
       })
     } else {

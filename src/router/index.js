@@ -4,6 +4,8 @@ import Root from '@/components/common/Root'
 import Home from '@/components/home/Home'
 import PersonCenter from '@/components/personcenter/PersonCenter'
 
+import Project from '@/components/project/Project'
+
 Vue.use(VueRouter)
 
 // 解决 NavigationDuplicated
@@ -31,6 +33,11 @@ export default new VueRouter({
           component: PersonCenter
         }
       ]
+    },
+    {
+      path: '/Project',
+      name: 'Project',
+      component: Project
     }
   ]
 })
