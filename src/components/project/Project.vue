@@ -8,16 +8,17 @@
           <button-tab-item :selected="tabType === 'hospital'" @on-item-click="tabType = 'hospital'">开展医院</button-tab-item>
         </button-tab>
       </div>
-      <component style="height: 400px;overflow: scroll" :datas="datas" :is="tabType"></component>
-      <box gap="10px">
-        <!--<x-button type="primary" link="/demo">我要报名</x-button>-->
-        <button style="width: 100%">hhhh</button>
-      </box>
+      <div class="content">
+        <component :datas="datas" :is="tabType"></component>
+      </div>
+      <div class="bottom">
+        <x-button type="primary" link="/Enroll">我要报名</x-button>
+      </div>
   </div>
 </template>
 
 <script>
-import { ButtonTab, ButtonTabItem,XButton,Box } from 'vux'
+import { ButtonTab, ButtonTabItem, XButton} from 'vux'
 import Introduction from './Introduction'
 import Standard from './Standard'
 import Hospital from './Hospital'
@@ -41,8 +42,7 @@ export default {
     Introduction,
     Standard,
     Hospital,
-    XButton,
-    Box
+    XButton
   }
 }
 </script>
@@ -51,6 +51,7 @@ export default {
 @borderColor: #f7f8fd;
 @white: #ffffff;
 .project {
+  /*height: 100%;*/
   .special-banner {
     width: 100%;
     height: 160px;
@@ -66,8 +67,20 @@ export default {
       height: 100%;
     }
   }
-}
-.nav {
-  padding: 0px 15px;
+  .nav {
+    padding: 0px 15px;
+  }
+  .content {
+    height: calc(~"100vh - 262px");
+    overflow: scroll;
+  }
+  .bottom {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #F7F7FA;
+  }
 }
 </style>

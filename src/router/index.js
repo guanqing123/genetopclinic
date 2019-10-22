@@ -5,6 +5,7 @@ import Home from '@/components/home/Home'
 import PersonCenter from '@/components/personcenter/PersonCenter'
 
 import Project from '@/components/project/Project'
+import Enroll  from '@/components/user/Enroll'
 
 Vue.use(VueRouter)
 
@@ -38,6 +39,11 @@ export default new VueRouter({
       path: '/Project',
       name: 'Project',
       component: Project
+    },
+    {
+      path: '/Enroll',
+      name: 'Enroll',
+      component: Enroll
     }
   ]
 })
