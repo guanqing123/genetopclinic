@@ -1,8 +1,9 @@
 <template>
   <div class="enroll">
     <group>
-      <x-input title="姓名:" v-model="name">
-        <span slot="label">姓名xxx:</span>
+      <x-input v-model="name">
+        <span slot="label" class="iconfont icon-bitian2-5">aaa</span>
+        <!--<span slot="label">姓名xxx:</span>-->
       </x-input>
     </group>
   </div>
@@ -24,6 +25,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="css">
 
 </style>

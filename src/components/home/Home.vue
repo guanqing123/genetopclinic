@@ -1,5 +1,5 @@
 <template>
-  <div id="home" class="home">
+  <div class="home">
       <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" @doRefresh="doRefresh" @nextPage="nextPage">
       <search
         v-model="searchText"
@@ -74,7 +74,7 @@ export default {
       console.log(project)
       this.$router.push({
         name: 'Project',
-        params: {projectId: project.id, title: project.title}
+        params: {projectId: project.id}
       })
     },
     beginSearch: function (value) {

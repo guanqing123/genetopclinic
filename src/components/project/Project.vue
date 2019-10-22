@@ -32,9 +32,9 @@ export default {
   },
   created(){
     var self = this;
-    console.log(this.$route.params.projectId)
     self.$set(self, 'tabType', 'introduction')
     self.$set(self, 'datas', '123')
+    console.log('projectId:'+this.$route.params.projectId)
   },
   components: {
     ButtonTab,
