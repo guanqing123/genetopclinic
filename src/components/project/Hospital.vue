@@ -1,67 +1,35 @@
 <template>
   <div class="hospital">
-    <x-table full-bordered :cell-bordered="false" style="background-color:#fff;">
+    <x-table full-bordered style="background-color:#fff;">
       <tbody>
-      <tr>
-        <td width="30%">上海市</td>
-        <td>上海市第一人民医院分院</td>
-      </tr>
-      <tr>
-        <td width="30%">上海市</td>
-        <td>上海交通大学附属胸科医院</td>
-      </tr>
-      <tr>
-        <td>内蒙古自治区</td>
-        <td>内蒙古自治区人民医院</td>
-      </tr>
-      <tr>
-        <td>新疆维吾尔自治区</td>
-        <td>新疆维吾尔自治区人民医院</td>
-      </tr>
-      <tr>
-        <td>北京市</td>
-        <td>北京朝阳医院</td>
-      </tr>
-      <tr>
-        <td>天津市</td>
-        <td>天津市肿瘤医院</td>
-      </tr>
-      <tr>
-        <td>浙江省</td>
-        <td>浙江大学医院院附属邵逸夫医院</td>
-      </tr>
-      <tr>
-        <td>新疆维吾尔自治区</td>
-        <td>新疆维吾尔自治区人民医院</td>
-      </tr>
-      <tr>
-        <td>北京市</td>
-        <td>北京朝阳医院</td>
-      </tr>
-      <tr>
-        <td>天津市</td>
-        <td>天津市肿瘤医院</td>
-      </tr>
-      <tr>
-        <td>浙江省</td>
-        <td>浙江大学医院院附属邵逸夫医院</td>
-      </tr>
-      <tr>
-        <td>浙江省</td>
-        <td>浙江大学医院院附属邵逸夫医院</td>
-      </tr>
-      <tr>
-        <td>浙江省</td>
-        <td>浙江大学医院院附属邵逸夫医院</td>
-      </tr>
-      <tr>
-        <td>浙江省</td>
-        <td>浙江大学医院院附属邵逸夫医院</td>
-      </tr>
-      <tr>
-        <td>浙江省</td>
-        <td>浙江大学医院院附属邵逸夫医院</td>
-      </tr>
+      <!--<template v-for="hospital in hospitals">-->
+        <!--<tr class="address">-->
+          <!--<td class="title" colspan="2">{{hospital.address}}</td>-->
+        <!--</tr>-->
+        <!--<template v-for="h in hospital.children">-->
+          <!--<tr>-->
+            <!--<td width="70%">{{h.hospital}}</td>-->
+            <!--<td>{{h.role}}</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<td>联系人: {{h.name}}</td>-->
+            <!--<td>{{h.phone}}</td>-->
+          <!--</tr>-->
+        <!--</template>-->
+      <!--</template>-->
+        <template v-for="hospital in hospitals">
+          <tr class="address">
+            <td class="title" colspan="2">{{hospital.address}}</td>
+          </tr>
+          <tr>
+            <td width="70%">{{hospital.hospital}}</td>
+            <td>{{hospital.role}}</td>
+          </tr>
+          <tr>
+            <td>联系人: {{hospital.name}}</td>
+            <td>{{hospital.phone}}</td>
+          </tr>
+        </template>
       </tbody>
     </x-table>
   </div>
@@ -72,6 +40,30 @@ import { XTable } from 'vux'
 export default {
   name: "hospital",
   props: ['datas'],
+  data(){
+    return {
+      // hospitals : [
+      //     {"address":"上海市",children:[
+      //         {"hospital":"上海市第一人民医院分院","role":"XX科室A主任","name":"田七",phone:"15868888886"},
+      //         {"hospital":"上海市第二人民医院","role":"XX科室B主任","name":"张三",phone:"15888888888"}
+      //         ]
+      //     },
+      //   {"address":"杭州市",children:[
+      //       {"hospital":"浙江省第一人民医院","role":"XX科室A主任","name":"王八",phone:"15888000088"},
+      //       {"hospital":"杭州市中医院","role":"XX科室B主任","name":"李四",phone:"15888888888"}
+      //     ]
+      //   }]
+      hospitals : [
+        {"address":"上海市","hospital":"上海市第一人民医院分院","role":"XX科室A主任","name":"田七",phone:"15868888886"},
+
+        {"address":"上海市","hospital":"上海市第二人民医院","role":"XX科室B主任","name":"张三",phone:"15888888888"},
+
+        {"address":"杭州市","hospital":"浙江省第一人民医院","role":"XX科室A主任","name":"王八",phone:"15888000088"},
+
+        {"address":"杭州市","hospital":"杭州市中医院","role":"XX科室B主任","name":"李四",phone:"15888888888"}
+      ]
+    }
+  },
   components: {
     XTable
   }
@@ -88,5 +80,12 @@ export default {
 .vux-table td {
   padding: 10px;
   text-align: left;
+}
+.address {
+  background-color: rgba(222,222,222,0.8);
+  text-align: center;
+}
+.title {
+  text-align: center !important;
 }
 </style>

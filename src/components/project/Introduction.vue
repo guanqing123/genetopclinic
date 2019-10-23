@@ -1,22 +1,22 @@
 <template>
-  <div class="introduction">
-    <div class="text">
-      如果原发灶已与邻近脏器有粘连或侵犯时，则需将临近脏器一并切除；如胃癌手术应做全胃或胃大部分切除，连同大网膜、胃大弯、胃小弯、肝门及胃左动脉旁淋巴结一并切除，若侵犯肝左叶时可连同肝左叶一并切除。然而如果病情发展已超越根治性手术的范围，或有严重的脏器功能障碍，或年老体弱不能耐受根治性手术时，则不要勉强行此手术，可根据病情采用姑息性手术或用其他治疗方法.如果原发灶已与邻近脏器有粘连或侵犯时，则需将临近脏器一并切除；如胃癌手术应做全胃或胃大部分切除，连同大网膜、胃大弯、胃小弯、肝门及胃左动脉旁淋巴结一并切除，若侵犯肝左叶时可连同肝左叶一并切除。然而如果病情发展已超越根治性手术的范围，或有严重的脏器功能障碍，或年老体弱不能耐受根治性手术时，则不要勉强行此手术，可根据病情采用姑息性手术或用其他治疗方法
-    </div>
-  </div>
+  <div class="introduction" v-html="datas.content"/>
 </template>
 
 <script>
 export default {
   name: "introduction",
   props: ['datas'],
+  created(){
+    console.log("introduction:"+JSON.stringify(this.datas))
+  }
 }
 </script>
 
-<style scoped lang="less">
+<style scoped lang="css">
 .introduction {
-  .text {
-    padding: 10px;
-  }
+  padding: 10px;
+}
+.introduction >>> img {
+  width: 100%;
 }
 </style>

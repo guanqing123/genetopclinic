@@ -15,7 +15,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-bitian2-5:before {
+.icon-bitian:before {
   content: "\e519";
   color: red;
 }

@@ -1,6 +1,6 @@
 <template>
   <div id="project" class="project">
-      <div class="special-banner">{{$route.params.title}}|PD-L1</div>
+      <div class="special-banner">{{datas.title}}</div>
       <div class="nav">
         <button-tab>
           <button-tab-item :selected="tabType === 'introduction'" @on-item-click="tabType = 'introduction'">项目介绍</button-tab-item>
@@ -32,9 +32,21 @@ export default {
   },
   created(){
     var self = this;
+    self.$vux.loading.show({
+      text: 'Loading'
+    });
     self.$set(self, 'tabType', 'introduction')
-    self.$set(self, 'datas', '123')
-    console.log('projectId:'+this.$route.params.projectId)
+    this.$axios.get(`/sellactivity/getSellActivity?id=${this.$route.params.projectId}&uid=180321105710`)
+      .then(res => {
+        if (self.$judgecode(res) === 1){
+          self.$set(self, 'datas', res.data.data)
+        }
+        self.$vux.loading.hide()
+      })
+      .catch(err => {
+        console.log(err)
+        self.$vux.loading.hide()
+      })
   },
   components: {
     ButtonTab,
