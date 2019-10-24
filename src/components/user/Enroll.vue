@@ -20,15 +20,21 @@
       <x-textarea title="详细地址：" v-model="enroll.detailAddress" placeholder="请填写" :show-counter="true" :rows="2" :max="50"></x-textarea>
       <x-textarea title="备注信息：" v-model="enroll.comment" placeholder="请填写" :show-counter="true" :rows="2" :max="50"></x-textarea>
     </group>
+
+    <weui-uploader title="上传患者病历"></weui-uploader>
   </div>
 </template>
 
 <script>
 import { Group, XInput, PopupPicker, XAddress, ChinaAddressV4Data, XTextarea } from 'vux'
+import WeuiUploader from '../common/WeuiUploader'
 export default {
   name: "enroll",
   data(){
     return {
+      headers:{},
+      params:{},
+      images:[],
       enroll : {
         name: '', // 姓名
         telephone: '', // 手机号
@@ -41,11 +47,13 @@ export default {
       },
       list: [['男','女']],
       addressData: ChinaAddressV4Data,
-      uploadUrl:'',
-      params:''
+      uploadUrl:''
     }
   },
   methods: {
+    preview: function(){},
+    addImage: function(){},
+    removeImage: function(){},
     getAddress: function (sure) {
       if (sure){
         let nameValue = this.$refs['address'].nameValue;
@@ -62,7 +70,8 @@ export default {
     XInput,
     PopupPicker,
     XAddress,
-    XTextarea
+    XTextarea,
+    WeuiUploader
   }
 }
 </script>
