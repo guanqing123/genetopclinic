@@ -22,19 +22,19 @@
     </group>
 
     <weui-uploader title="上传患者病历"></weui-uploader>
+    <group class="bottom">
+      <x-button type="primary">提交</x-button>
+    </group>
   </div>
 </template>
 
 <script>
-import { Group, XInput, PopupPicker, XAddress, ChinaAddressV4Data, XTextarea } from 'vux'
+import { Group, XInput, PopupPicker, XAddress, ChinaAddressV4Data, XTextarea, XButton } from 'vux'
 import WeuiUploader from '../common/WeuiUploader'
 export default {
   name: "enroll",
   data(){
     return {
-      headers:{},
-      params:{},
-      images:[],
       enroll : {
         name: '', // 姓名
         telephone: '', // 手机号
@@ -46,8 +46,7 @@ export default {
         comment: '' //备注
       },
       list: [['男','女']],
-      addressData: ChinaAddressV4Data,
-      uploadUrl:''
+      addressData: ChinaAddressV4Data
     }
   },
   methods: {
@@ -66,12 +65,14 @@ export default {
     }
   },
   components: {
+    XButton,
     Group,
     XInput,
     PopupPicker,
     XAddress,
     XTextarea,
-    WeuiUploader
+    WeuiUploader,
+    XButton
   }
 }
 </script>
@@ -81,6 +82,12 @@ export default {
   .slot {
     text-align: right;
     margin-right: 2em;
+  }
+  .bottom {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #F7F7FA;
   }
 }
 </style>

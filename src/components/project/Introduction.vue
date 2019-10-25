@@ -12,11 +12,17 @@ export default {
 }
 </script>
 
-<style scoped lang="css">
+<style scoped lang="less">
 .introduction {
   padding: 10px;
+
+  /deep/ img {
+    width: 100%;
+  }
 }
+/*
+lang="css"
 .introduction >>> img {
   width: 100%;
-}
+}*/
 </style>

@@ -16,11 +16,10 @@
             <div class="weui-uploader">
               <div class="weui-uploader__hd">
                 <p class="weui-uploader__title">{{title}}</p>
-                <div class="weui-uploader__info">{{images.length}}/{{max}}</div>
+                <div class="weui-uploader__info">{{4}}/{{5}}</div>
               </div>
               <div class="weui-uploader__bd">
-                <ul class="weui-uploader__files" id="uploaderFiles">
-                  <!--<li class="weui-uploader__file" :style="defaultImg" ></li>-->
+                <ul class="weui-uploader__files" id="uploaderFiles" v-html="imgStr">
                   <!--<li class="weui-uploader__file" :style="defaultImg"></li>-->
                   <!--<li class="weui-uploader__file" :style="defaultImg"></li>-->
                   <!--<li class="weui-uploader__file weui-uploader__file_status" :style="defaultImg">-->
@@ -63,18 +62,21 @@ export default {
   name: "weui-uploader",
   data(){
     return {
-      defaultImg: 'background-image:url('+require('../../assets/pic_160.png')+')'
+      defaultImg: 'background-image:url('+require('../../assets/pic_160.png')+')',
+      imgStr:''
     }
   },
   mounted(){
-    var tmpl = '<li class="weui-uploader__file" style="background-color:url(#url#)"></li>',
+    var self = this;
+    // var tmpl = '<li class="weui-uploader__file" style="background-image:url(#url#)"></li>',
+    var tmpl = '<li class="weui-uploader__file"><img src="#url#"/></li>',
       $gallery = document.getElementById('gallery'),$galleryImg = document.getElementById('galleryImg'),
       $uploaderInput = document.getElementById('uploaderInput'),
       $uploaderFiles = document.getElementById('uploaderFiles')
       ;
 
     $uploaderInput.addEventListener("change",function(e){
-      debugger
+      // debugger
       var src, url = window.URL || window.webkitURL || window.mozURL, files = e.target.files;
       for (var i = 0, len = files.length; i < len; ++i) {
         var file = files[i];
@@ -83,18 +85,32 @@ export default {
         } else {
           src = e.target.result;
         }
-        $uploaderFiles.insertAdjacentHTML('beforeend', tmpl.replace('#url#', src));
+        // $uploaderFiles.insertAdjacentHTML('beforeend', tmpl.replace('#url#', src));
+        let tempStr = self.imgStr.concat(tmpl.replace('#url#', src))
+        self.$set(self, 'imgStr', tempStr);
       }
     });
   }
 }
 </script>
 
-<style scoped lang="css">
-/*@import '~vux/src/styles/weui/widget/weui-uploader/index.less';*/
-/*.page {*/
-  /*.weui-cells {*/
-    /*margin-top: 0px;*/
-  /*}*/
-/*}*/
+<style scoped lang="less">
+@import '~vux/src/styles/weui/widget/weui-uploader/index.less';
+.page {
+  .weui-cells {
+    margin-top: 0px;
+  }
+  /deep/ .weui-uploader__file {
+    float: left;
+    margin-right: 9px;
+    margin-bottom: 9px;
+    width: 79px;
+    height: 79px;
+    background: no-repeat center center;
+    background-size: cover;
+  }
+  /deep/ img {
+    width: 100%;
+  }
+}
 </style>
