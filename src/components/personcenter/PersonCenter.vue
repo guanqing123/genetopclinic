@@ -1,6 +1,6 @@
 <template>
   <div id="personcenter">
-    this is personcenter
+    <div>个人中心</div>
   </div>
 </template>
 
