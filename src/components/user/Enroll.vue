@@ -10,10 +10,12 @@
       <popup-picker placeholder="请选择" popup-title="性别" :data="list" v-model="enroll.sex" value-text-align="left">
         <label slot="title" class="weui-label slot iconfont icon-bitian">性别：</label>
       </popup-picker>
+      <x-input type="number" v-model="enroll.age" placeholder="请填写" required>
+        <label slot="label" class="weui-label slot iconfont icon-bitian">年龄：</label>
+      </x-input>
       <x-input type="text" v-model="enroll.disease" placeholder="请填写" required>
         <label slot="label" class="weui-label slot iconfont icon-bitian">所患疾病：</label>
       </x-input>
-      <x-input title="用药情况：" type="text" v-model="enroll.disease" placeholder="请填写"/>
       <x-address ref="address" title="所在地区" popupTitle="所在地区" :raw-value="false" :list="addressData" placeholder="请选择" value-text-align="left" @on-hide="getAddress">
         <label slot="title" class="weui-label slot iconfont icon-bitian">所在地区：</label>
       </x-address>
@@ -40,7 +42,6 @@ export default {
         telephone: '', // 手机号
         sex: [], // 性别
         disease: '', //所患疾病
-        medication: '', //用药情况
         address: [], //所在地区
         detailAddress: '', //详细地址
         comment: '' //备注

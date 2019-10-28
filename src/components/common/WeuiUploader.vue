@@ -57,6 +57,10 @@ export default {
     max: { // 图片上传最大数
       type: Number,
       default: 1
+    },
+    allowTypes: { // 图片列表范围
+      type: Array,
+      default: () => []
     }
   },
   name: "weui-uploader",
@@ -68,8 +72,7 @@ export default {
   },
   mounted(){
     var self = this;
-    // var tmpl = '<li class="weui-uploader__file" style="background-image:url(#url#)"></li>',
-    var tmpl = '<li class="weui-uploader__file"><img src="#url#"/></li>',
+    var tmpl = '<li class="weui-uploader__file" style="background-image:url(#url#)"></li>',
       $gallery = document.getElementById('gallery'),$galleryImg = document.getElementById('galleryImg'),
       $uploaderInput = document.getElementById('uploaderInput'),
       $uploaderFiles = document.getElementById('uploaderFiles')
@@ -80,6 +83,15 @@ export default {
       var src, url = window.URL || window.webkitURL || window.mozURL, files = e.target.files;
       for (var i = 0, len = files.length; i < len; ++i) {
         var file = files[i];
+        // 判断图片类型
+        if (self.allowTypes.indexOf(file.type) === -1) {
+          self.$vux.toast.show({
+            text: '该类型不允许上传!',
+            type: 'text',
+            position: 'top'
+          });
+          continue;
+        }
         if (url) {
           src = url.createObjectURL(file);
         } else {
@@ -90,12 +102,22 @@ export default {
         self.$set(self, 'imgStr', tempStr);
       }
     });
+
+    $uploaderFiles.bindEvent("click", "li", function(){
+      $galleryImg.setAttribute("style", this.getAttribute("style"));
+      $gallery.fadeIn(5);
+    });
+
+    $gallery.bindEvent("click", function(){
+      $gallery.fadeOut(5);
+    });
   }
 }
 </script>
 
 <style scoped lang="less">
 @import '~vux/src/styles/weui/widget/weui-uploader/index.less';
+@weuiGalleryOprHeight: 60px;
 .page {
   .weui-cells {
     margin-top: 0px;
@@ -111,6 +133,46 @@ export default {
   }
   /deep/ img {
     width: 100%;
+  }
+  /* 预览大图 */
+  .weui-gallery {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #000000;
+    z-index: 1000;
+  }
+  .weui-gallery__img {
+    position: absolute;
+    top: constant(safe-area-inset-top);
+    top: env(safe-area-inset-top);
+    right: constant(safe-area-inset-right);
+    right: env(safe-area-inset-right);
+    bottom: calc(@weuiGalleryOprHeight ~"+ constant(safe-area-inset-bottom)");
+    bottom: calc(@weuiGalleryOprHeight ~"+ env(safe-area-inset-bottom)");
+    left: constant(safe-area-inset-left);
+    left: env(safe-area-inset-left);
+    background: center center no-repeat;
+    background-size: contain;
+  }
+  .weui-gallery__opr {
+    position: absolute;
+    right: constant(safe-area-inset-right);
+    right: env(safe-area-inset-right);
+    bottom: constant(safe-area-inset-bottom);
+    bottom: env(safe-area-inset-bottom);
+    left: constant(safe-area-inset-left);
+    left: env(safe-area-inset-left);
+    background-color: #0D0D0D;
+    color: #FFFFFF;
+    line-height: @weuiGalleryOprHeight;
+    text-align: center;
+  }
+  .weui-gallery__del {
+    display: block;
   }
 }
 </style>
