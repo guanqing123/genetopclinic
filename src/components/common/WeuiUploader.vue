@@ -10,13 +10,14 @@
         </div>
       </div>
 
+
       <div class="weui-cells weui-cells_form">
         <div class="weui-cell">
           <div class="weui-cell__bd">
             <div class="weui-uploader">
               <div class="weui-uploader__hd">
                 <p class="weui-uploader__title">{{title}}</p>
-                <div class="weui-uploader__info">{{4}}/{{5}}</div>
+                <div class="weui-uploader__info">{{images.length}}/{{max}}</div>
               </div>
               <div class="weui-uploader__bd">
                 <ul class="weui-uploader__files" id="uploaderFiles" v-html="imgStr">
@@ -35,10 +36,14 @@
                   <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple/>
                 </div>
               </div>
+              <div>
+                <slot name="desc"></slot>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -79,16 +84,17 @@ export default {
       ;
 
     $uploaderInput.addEventListener("change",function(e){
-      // debugger
+       debugger
       var src, url = window.URL || window.webkitURL || window.mozURL, files = e.target.files;
       for (var i = 0, len = files.length; i < len; ++i) {
         var file = files[i];
         // 判断图片类型
         if (self.allowTypes.indexOf(file.type) === -1) {
           self.$vux.toast.show({
-            text: '该类型不允许上传!',
             type: 'text',
-            position: 'top'
+            text: '该类型不允许上传!',
+            position: 'top',
+            width: '15em'
           });
           continue;
         }
