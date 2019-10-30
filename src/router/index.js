@@ -1,11 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Root from '@/components/common/Root'
-import Home from '@/components/home/Home'
-import PersonCenter from '@/components/personcenter/PersonCenter'
-
-import Project from '@/components/project/Project'
-import Enroll  from '@/components/user/Enroll'
 
 Vue.use(VueRouter)
 
@@ -20,13 +14,13 @@ export default new VueRouter({
     {
       path: '/',
       name: 'Root',
-      component: Root,
+      component: () => import('../components/common/Root'),
       redirect: { name: 'Home' },
       children: [
         {
           path: 'Home',
           name: 'Home',
-          component: Home,
+          component: () => import('../components/home/Home'),
           meta: {
             title: '首页'
           }
@@ -34,7 +28,25 @@ export default new VueRouter({
         {
           path: 'PersonCenter',
           name: 'PersonCenter',
-          component: PersonCenter,
+          component: () => import('../components/personcenter/PersonCenter'),
+          redirect: { name: 'Wait' },
+          children: [
+            {
+              path: 'Wait',
+              name: 'Wait',
+              component: () => import('../components/personcenter/Wait')
+            },
+            {
+              path: 'Pass',
+              name: 'Pass',
+              component: () => import('../components/personcenter/Pass')
+            },
+            {
+              path: 'Refuse',
+              name: 'Refuse',
+              component: () => import('../components/personcenter/Refuse')
+            }
+          ],
           meta: {
             title: '个人中心'
           }
@@ -47,7 +59,7 @@ export default new VueRouter({
     {
       path: '/Project/:projectId',
       name: 'Project',
-      component: Project,
+      component: () => import('../components/project/Project'),
       meta: {
         title: '项目详情'
       }
@@ -55,7 +67,7 @@ export default new VueRouter({
     {
       path: '/Enroll',
       name: 'Enroll',
-      component: Enroll,
+      component: () => import('../components/user/Enroll'),
       meta: {
         title: '我要参加'
       }

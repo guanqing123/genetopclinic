@@ -1,19 +1,6 @@
 <template>
-  <div class="home pull">
-      <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" @doRefresh="doRefresh" @nextPage="nextPage">
-      <search
-        v-model="searchText"
-        placeholder="请输入关键字"
-        auto-scroll-to-top
-        @on-submit="beginSearch"
-        @on-cancel="cancel"
-      />
-      <swiper
-        :list="swiperList"
-        auto
-        loop
-        :aspect-ratio = 0.4
-      />
+  <div class="wait pull">
+    <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" @doRefresh="doRefresh" @nextPage="nextPage">
       <box gap="5px 0px 10px 10px">
         <div class="result-info">共获得约<span class="number-info" v-html="total"></span>条结果</div>
         <div class="project-item" v-for="project in projectList" :key="project.id" @click="goProject(project)">
@@ -36,18 +23,16 @@
           </div>
         </div>
       </box>
-      </pull-up-down>
+    </pull-up-down>
   </div>
 </template>
 
 <script>
-import { Search, Swiper, Box, Flexbox, FlexboxItem} from 'vux'
+import { Box, Flexbox, FlexboxItem} from 'vux'
 export default {
-  name: "home",
+  name: "wait",
   data(){
     return {
-      searchText: '', //搜索框内容
-      swiperList: [], //轮播数组
       projectList: [], //项目列表
       pages: 0, //总页数
       currentPage: 1, //当前页数
@@ -55,17 +40,6 @@ export default {
     }
   },
   created(){
-    this.$axios.get('/homepage/getHomePageList')
-      .then(res => {
-        this.swiperList = res.data.data.map(item =>{
-          return {
-            url: '/PersonCenter',
-            img: item.fileRealPath,
-            title: item.title
-          }
-        })
-      })
-      .catch(err => console.log(err))
     this.getProjectList();
   },
   methods: {
@@ -130,8 +104,6 @@ export default {
     }
   },
   components: {
-    Search,
-    Swiper,
     Box,
     Flexbox,
     FlexboxItem
@@ -144,7 +116,7 @@ export default {
 @width94: 94px;
 @fontColor: rgb(153, 153, 153);
 
-.home {
+.wait {
   .result-info {
     border-bottom: 1px solid rgba(153,153,153,0.3);
     padding-bottom: 5px;
