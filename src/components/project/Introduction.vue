@@ -1,14 +1,11 @@
 <template>
-  <div class="introduction" v-html="datas.content"/>
+  <div class="introduction" v-html="datas.xmjs"/>
 </template>
 
 <script>
 export default {
   name: "introduction",
-  props: ['datas'],
-  created(){
-    console.log("introduction:"+JSON.stringify(this.datas))
-  }
+  props: ['datas']
 }
 </script>
 

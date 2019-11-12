@@ -1,6 +1,6 @@
 <template>
   <div id="project" class="project">
-      <div class="special-banner">{{datas.title}}</div>
+      <div class="special-banner">{{datas.xmmc}}</div>
       <div class="nav">
         <button-tab>
           <button-tab-item :selected="tabType === 'introduction'" @on-item-click="tabType = 'introduction'">项目介绍</button-tab-item>
@@ -12,7 +12,7 @@
         <component :datas="datas" :is="tabType"></component>
       </div>
       <div class="bottom">
-        <x-button type="primary" link="/Enroll">我要报名</x-button>
+        <x-button type="primary" :link="link">我要报名</x-button>
       </div>
   </div>
 </template>
@@ -27,7 +27,8 @@ export default {
   data(){
     return {
         tabType: "", //当前tab类型：introduction-项目介绍,standard-参加标准,hospital-开展医院
-        datas: {}
+        datas: {},
+        link: "/Enroll/" + this.$route.params.projectId
     }
   },
   created(){
@@ -35,8 +36,8 @@ export default {
     self.$vux.loading.show({
       text: 'Loading'
     });
-    self.$set(self, 'tabType', 'introduction')
-    this.$axios.get(`/sellactivity/getSellActivity?id=${this.$route.params.projectId}&uid=180321105710`)
+    self.$set(self, 'tabType', 'introduction');
+    self.$axios.get(`/project/projectDetail?projectid=${this.$route.params.projectId}`)
       .then(res => {
         if (self.$judgecode(res) === 1){
           self.$set(self, 'datas', res.data.data)

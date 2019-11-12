@@ -55,7 +55,7 @@ export default {
     //下拉刷新监听
     bindRefresh: function () {
       var self = this;
-      var parent = document.querySelector(".pull");
+      var parent = document.querySelector(".home");
       parent.addEventListener('touchstart', function(e) {
         self.startY = e.touches[0].pageY;
       });
@@ -66,15 +66,49 @@ export default {
           self.isDown = 1;
         }
       });
-      parent.addEventListener('touchend', function(e) {
-        if (self.downFlag) {
-          //显示正在刷新...
-          self.startY = 0;
-          self.isDown = 2;
-          self.downFlag = false;
-          self.$emit("doRefresh");
-        }
-      });
+
+      var Terminal = {
+        // 辨别移动终端类型
+        platform : (function(){
+          var u = navigator.userAgent;
+          return {
+            // android终端或者uc浏览器
+            android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1,
+            // 是否为iPhone或者QQHD浏览器
+            iPhone: u.indexOf('iPhone') > -1 ,
+            // 是否iPad
+            iPad: u.indexOf('iPad') > -1 ,
+            // 是否是通过微信的扫一扫打开的
+            weChat: u.indexOf('MicroMessenger') > -1
+          };
+        }()),
+        // 辨别移动终端的语言：zh-cn、en-us、ko-kr、ja-jp...
+        language : (navigator.browserLanguage || navigator.language).toLowerCase()
+      }
+
+      if (Terminal.platform.android) {
+        /*适配安卓*/
+        parent.addEventListener('touchcancel', function(e) {
+          if (self.downFlag) {
+            //显示正在刷新...
+            self.startY = 0;
+            self.isDown = 2;
+            self.downFlag = false;
+            self.$emit("doRefresh");
+          }
+        });
+      } else if (Terminal.platform.iPhone || Terminal.platform.iPad) {
+        /*适配苹果*/
+        parent.addEventListener('touchend', function(e) {
+          if (self.downFlag) {
+            //显示正在刷新...
+            self.startY = 0;
+            self.isDown = 2;
+            self.downFlag = false;
+            self.$emit("doRefresh");
+          }
+        });
+      }
     },
     //是否在顶部
     isTop: function () {

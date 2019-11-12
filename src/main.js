@@ -17,7 +17,8 @@ Vue.use(Installer)
 
 // Axios
 import Axios from 'axios'
-Axios.defaults.baseURL = 'https://wx.hongyancloud.com/wxDev'
+// Axios.defaults.baseURL = 'https://wx.hongyancloud.com/wxDev'
+Axios.defaults.baseURL = 'http://118.190.55.164/gene'
 Vue.prototype.$axios = Axios
 
 import FastClick from 'fastclick'

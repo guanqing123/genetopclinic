@@ -1,5 +1,5 @@
 <template>
-  <div class="standard" v-html="datas.title"/>
+  <div class="standard" v-html="datas.cjbz"/>
 </template>
 
 <script>

@@ -1,3 +1,6 @@
+//引入Moment
+import Moment from 'moment'
+
 // vue插件必须具备Installer函数
 function Installer() {
   // 自定义初始化行为
@@ -102,7 +105,7 @@ Installer.install = function (Vue) {
   })
 
   Vue.prototype.$judgecode = function (res) {
-    if (res.data.code != '00000') {
+    if (res.data.code != 200) {
       this.$vux.toast.show({
         text: res.data.msg,
         type: 'text',
@@ -112,6 +115,12 @@ Installer.install = function (Vue) {
       return 1
     }
   }
+
+  // 定义过滤器
+  Moment.locale('zh-cn')
+  Vue.filter('convertTime', function (date, formatStr) {
+    return Moment(date).format(formatStr)
+  })
 
 }
 

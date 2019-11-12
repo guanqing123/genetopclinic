@@ -65,7 +65,7 @@ export default new VueRouter({
       }
     },
     {
-      path: '/Enroll',
+      path: '/Enroll/:projectId',
       name: 'Enroll',
       component: () => import('../components/user/Enroll'),
       meta: {

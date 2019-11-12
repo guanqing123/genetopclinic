@@ -2,10 +2,11 @@
   <div class="home pull">
       <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" @doRefresh="doRefresh" @nextPage="nextPage">
       <search
-        v-model="searchText"
+        v-model="condition"
         placeholder="请输入关键字"
         auto-scroll-to-top
-        @on-submit="beginSearch"
+        @on-blur="search"
+        @on-submit="search"
         @on-cancel="cancel"
       />
       <swiper
@@ -13,25 +14,26 @@
         auto
         loop
         :aspect-ratio = 0.4
+        @on-click-list-item="clickSwiper"
       />
       <box gap="5px 0px 10px 10px">
         <div class="result-info">共获得约<span class="number-info" v-html="total"></span>条结果</div>
         <div class="project-item" v-for="project in projectList" :key="project.id" @click="goProject(project)">
           <div class="img-box">
-            <img :src="project.fileRealPath"/>
+            <img :src="project.sltPath"/>
           </div>
           <div class="info-box">
             <flexbox>
-              <flexbox-item><div class="title">招募EGFR突变非小细胞癌地方发电房地方发大发发电房发放大幅度的发的</div></flexbox-item>
+              <flexbox-item><div class="title">{{project.xmmc}}</div></flexbox-item>
             </flexbox>
             <flexbox>
-              <flexbox-item><div class="subtitle">适应症: EGFR突变的非小细胞癌</div></flexbox-item>
+              <flexbox-item><div class="subtitle">适应症: {{project.syz}}</div></flexbox-item>
             </flexbox>
             <flexbox>
-              <flexbox-item><div class="desc">项目用药: PD-1</div></flexbox-item>
+              <flexbox-item><div class="desc">项目用药: {{project.xmyy}}</div></flexbox-item>
             </flexbox>
             <flexbox>
-              <flexbox-item><span class="state">进行中</span><span class="date">截止时间:{{project.createDate}}</span></flexbox-item>
+              <flexbox-item><span class="state">进行中</span><span class="date">截止时间:{{project.jzsj | convertTime('YYYY-MM-DD')}}</span></flexbox-item>
             </flexbox>
           </div>
         </div>
@@ -46,50 +48,64 @@ export default {
   name: "home",
   data(){
     return {
-      searchText: '', //搜索框内容
+      condition: '', //搜索框内容
+      loading: false, // 正在搜索
       swiperList: [], //轮播数组
       projectList: [], //项目列表
       pages: 0, //总页数
       currentPage: 1, //当前页数
+      pageSize: 5, //每页条数
       total: 0 //总条数
     }
   },
   created(){
-    this.$axios.get('/homepage/getHomePageList')
+    var self = this;
+    self.$axios.get('/project/swiperList')
       .then(res => {
-        this.swiperList = res.data.data.map(item =>{
-          return {
-            url: '/PersonCenter',
-            img: item.fileRealPath,
-            title: item.title
-          }
-        })
-      })
-      .catch(err => console.log(err))
-    this.getProjectList();
+        self.swiperList = res.data.data
+      });
+    self.doRefresh();
+  },
+  mounted(){
+    this.$nextTick(function(){
+
+    })
   },
   methods: {
-    // 跳转详情
-    goProject: function (project) {
-      console.log(project)
+    // 点击轮播,跳转详情
+    clickSwiper: function(item) {
       this.$router.push({
         name: 'Project',
-        params: {projectId: project.id}
+        params: {projectId: item.projectid}
       })
     },
-    beginSearch: function (value) {
-      alert('beginSearch:'+value+'searchText:'+this.searchText)
+    // 跳转详情
+    goProject: function (project) {
+      this.$router.push({
+        name: 'Project',
+        params: {projectId: project.projectid}
+      })
+    },
+    search: function () {
+      document.activeElement.blur();
+      var self = this;
+      self.doRefresh();
     },
     cancel: function () {
-      alert(this.searchText)
+      document.activeElement.blur();
+      var self = this
+      self.$set(self, 'condition', null)
+      self.doRefresh();
     },
     //执行下拉释放刷新
     doRefresh: function () {
       var self = this;
+      if (self.loading) return;
       self.$set(self, 'currentPage', 1);
       self.$set(self, 'pages', 0);
       self.$set(self, 'total', 0);
       self.$set(self, 'projectList', []);
+      self.$set(self, 'loading', true);
       self.getProjectList(); // 开始查询
     },
     nextPage: function () {
@@ -101,31 +117,33 @@ export default {
       self.$vux.loading.show({
         text: 'Loading'
       });
-      self.$axios.get('/sellactivity/getSellingActivityFenye',{
+      self.$axios.get('/project/list', {
         params: {
-          userid : '180321105710',
           pageNum: self.currentPage,
-          pageSize: 10
+          pageSize: self.pageSize,
+          condition: self.condition
         }
       }).then(res => {
         if (self.$judgecode(res) === 1){
           let data = res.data.data;
-          self.total = data.total
-          self.pages = data.pages
+          self.total = data.total;
+          self.pages = data.pages;
           if (self.currentPage === 1) {
-            self.$set(self, 'projectList', data.list);
+            self.$set(self, 'projectList', data.records);
           } else {
-            let newArray = self.projectList.concat(data.list);
+            let newArray = self.projectList.concat(data.records);
             self.$set(self, 'projectList', newArray);
           }
-          self.currentPage ++
+          self.currentPage ++;
           // 关闭下拉
           self.$refs['pull'].closePullDown();
         }
-        this.$vux.loading.hide()
+        self.$vux.loading.hide();
+        self.loading = false;
       }).catch(err => {
         console.log(err)
-        this.$vux.loading.hide()
+        self.$vux.loading.hide();
+        self.loading = false;
       })
     }
   },
