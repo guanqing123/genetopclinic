@@ -116,6 +116,8 @@ Installer.install = function (Vue) {
     }
   }
 
+  Vue.prototype.$noop = function () {}
+
   // 定义过滤器
   Moment.locale('zh-cn')
   Vue.filter('convertTime', function (date, formatStr) {

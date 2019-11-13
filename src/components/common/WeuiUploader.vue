@@ -1,6 +1,7 @@
 <template>
   <div class="page">
     <div class="page__bd">
+      <!-- 老的预览方式
       <div class="weui-gallery" id="gallery">
         <span class="weui-gallery__img" id="galleryImg"></span>
         <div class="weui-gallery__opr">
@@ -9,9 +10,13 @@
           </a>
         </div>
       </div>
+      -->
 
+      <div v-transfer-dom>
+        <previewer :list="preSrc" ref="previewer" :options="options" @on-close="onPreviewClose"></previewer>
+      </div>
 
-      <div class="weui-cells weui-cells_form">
+      <!--<div class="weui-cells weui-cells_form">因为外面已经有一层group包含weui-cells-->
         <div class="weui-cell">
           <div class="weui-cell__bd">
             <div class="weui-uploader">
@@ -20,7 +25,7 @@
                 <div class="weui-uploader__info">{{images.length}}/{{max}}</div>
               </div>
               <div class="weui-uploader__bd">
-                <ul class="weui-uploader__files" id="uploaderFiles" v-html="imgStr">
+                <ul class="weui-uploader__files" id="uploaderFiles">
                   <!--<li class="weui-uploader__file" :style="defaultImg"></li>-->
                   <!--<li class="weui-uploader__file" :style="defaultImg"></li>-->
                   <!--<li class="weui-uploader__file weui-uploader__file_status" :style="defaultImg">-->
@@ -31,6 +36,9 @@
                   <!--<li class="weui-uploader__file weui-uploader__file_status" :style="defaultImg">-->
                     <!--<div class="weui-uploader__file-content">50%</div>-->
                   <!--</li>-->
+                  <li v-for="(img, index) in imgSrc" class="weui-uploader__file imgitem" :style="img" @click="show(index)">
+                    <div class="delete" @click="deleteImg($event, index)">x</div>
+                  </li>
                 </ul>
                 <div class="weui-uploader__input-box">
                   <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple/>
@@ -42,14 +50,16 @@
             </div>
           </div>
         </div>
-      </div>
+      <!--</div>-->
 
     </div>
   </div>
 </template>
 
 <script>
+import { Previewer, TransferDom } from 'vux'
 export default {
+  name: "weui-uploader",
   props: {
     title:{ // 标题
       type: String,
@@ -68,28 +78,130 @@ export default {
       default: () => []
     }
   },
-  name: "weui-uploader",
+  model: {
+    prop: "images", // 绑定的值,通过父组件传递
+    event: "update" // 自定义事件名
+  },
+  watch: {
+    images : function(val, oldVal) {
+      for (var i=0;i<val.length;i++){
+        console.log('i='+i+"\t size="+val[i].size)
+      }
+    }
+  },
   data(){
     return {
       defaultImg: 'background-image:url('+require('../../assets/pic_160.png')+')',
-      imgStr:''
+      imgSrc: [],
+      preSrc: [],
+      options: {
+        getThumbBoundsFn (index) {
+          // find thumbnail element
+          let thumbnail = document.querySelectorAll('.imgitem')[index];
+          // get window scroll Y
+          let pageYScroll = window.pageYOffset || document.documentElement.scrollTop
+          // optionally get horizontal scroll
+          // get position of element relative to viewport
+          let rect = thumbnail.getBoundingClientRect()
+          // w = width
+          return {x: rect.left, y: rect.top + pageYScroll, w: rect.width}
+          // Good guide on how to get element coordinates:
+          // http://javascript.info/tutorial/coordinates
+        }
+      }
+    }
+  },
+  methods : {
+    deleteImg: function (e, index) {
+      e.stopPropagation();
+      var self = this;
+      self.imgSrc.splice(index, 1);
+      self.preSrc.splice(index, 1);
+      self.images.splice(index, 1);
+    },
+    show: function (index) {
+      this.$refs.previewer.show(index)
+    },
+    onPreviewClose: function () {
+      this.$refs.previewer.photoswipe = null
+    },
+    // 压缩图片
+    compressImage: function (file, success, error) {
+        // 图片小于1M不压缩
+/*        if (file.size < Math.pow(1024, 2)) {
+          return success(file);
+        }*/
+
+        const name = file.name; //文件名
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (e) {
+          const src = e.target.result;
+
+          const img = new Image();
+          img.src = src;
+          img.onload = function (e) {
+            const w = img.width;
+            const h = img.height;
+            const quality = 0.8; // 默认图片质量为0.92
+            // 生成canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            // 创建属性节点
+            const anw = document.createAttribute("width");
+            anw.nodeValue = w;
+            const anh = document.createAttribute("height");
+            anh.nodeValue = h;
+            canvas.setAttributeNode(anw);
+            canvas.setAttributeNode(anh);
+
+            //铺底色 PNG转JPEG时透明区域会变黑色
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.drawImage(img, 0, 0, w, h);
+            // quality值越小，所绘制出的图像越模糊
+            const base64 = canvas.toDataURL('image/jpeg', quality); //图片格式jpeg或webp可以选0-1质量区间
+
+            // 返回base64转blob的值
+            console.log(`原图${(src.length/1024).toFixed(2)}kb`, `新图${(base64.length/1024).toFixed(2)}kb`);
+            //去掉url的头，并转换为byte
+            const bytes = window.atob(base64.split(',')[1]);
+            //处理异常,将ascii码小于0的转换为大于0
+            const ab = new ArrayBuffer(bytes.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < bytes.length; i++) {
+              ia[i] = bytes.charCodeAt(i);
+            }
+            file = new Blob( [ab] , {type : 'image/jpeg'});
+            file.name = name;
+
+            success(file);
+          }
+          img.onerror = function (e) {
+            error(e);
+          }
+        }
+        reader.onerror = function (e) {
+          error(e);
+        }
     }
   },
   mounted(){
-    var self = this;
-    var tmpl = '<li class="weui-uploader__file" style="background-image:url(#url#)"></li>',
-      $gallery = document.getElementById('gallery'),$galleryImg = document.getElementById('galleryImg'),
+    /*var $gallery = document.getElementById('gallery'),$galleryImg = document.getElementById('galleryImg'),
       $uploaderInput = document.getElementById('uploaderInput'),
       $uploaderFiles = document.getElementById('uploaderFiles')
-      ;
+      ;*/
+    var self = this;
+    var $uploaderInput = document.getElementById('uploaderInput');
 
     $uploaderInput.addEventListener("change",function(e){
-       debugger
       var src, url = window.URL || window.webkitURL || window.mozURL, files = e.target.files;
       for (var i = 0, len = files.length; i < len; ++i) {
         var file = files[i];
+        console.log('1>'+file.name)
         // 判断图片类型
-        if (self.allowTypes.indexOf(file.type) === -1) {
+/*        if (self.allowTypes.indexOf(file.type) === -1) {
           self.$vux.toast.show({
             type: 'text',
             text: '该类型不允许上传!',
@@ -97,18 +209,33 @@ export default {
             width: '15em'
           });
           continue;
+        }*/
+        if (self.max && self.images.length >= self.max) {
+          if (self.allowTypes.indexOf(file.type) === -1) {
+            self.$vux.toast.show({
+              type: 'text',
+              text: '图片数量超出'+ self.max + '张！',
+              position: 'top',
+              width: '15em'
+            });
+            break;
+          }
         }
         if (url) {
           src = url.createObjectURL(file);
         } else {
           src = e.target.result;
         }
-        // $uploaderFiles.insertAdjacentHTML('beforeend', tmpl.replace('#url#', src));
-        let tempStr = self.imgStr.concat(tmpl.replace('#url#', src))
-        self.$set(self, 'imgStr', tempStr);
+        self.imgSrc.push("background-image: url("+src+")");
+        self.preSrc.push({msrc:src, src:src});
+        self.compressImage(file, function(file) {
+          console.log('2>'+file.name)
+          self.images.push(file);
+        }, self.$noop());
       }
     });
 
+    /* 使用vue @事件代替
     $uploaderFiles.bindEvent("click", "li", function(){
       $galleryImg.setAttribute("style", this.getAttribute("style"));
       $gallery.fadeIn(5);
@@ -116,7 +243,13 @@ export default {
 
     $gallery.bindEvent("click", function(){
       $gallery.fadeOut(5);
-    });
+    });*/
+  },
+  directives: {
+    TransferDom
+  },
+  components: {
+    Previewer
   }
 }
 </script>
@@ -179,6 +312,35 @@ export default {
   }
   .weui-gallery__del {
     display: block;
+  }
+  .weui-uploader__hd {
+    padding-bottom: 0px;
+  }
+  .weui-uploader__file {
+    margin-top: 9px;
+    margin-right: 15px;
+  }
+  .weui-uploader__input-box {
+    margin-top: 9px;
+    margin-right: 15px;
+  }
+}
+.imgitem {
+  position: relative;
+  border: 1px solid #D9D9D9;
+  .delete {
+    position: absolute;
+    top: -9px;
+    right: -9px;
+    width: 20px;
+    height: 20px;
+    border-radius: 9px;
+    background-color: rgba(167,167,167, 0.7);
+    border: none;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+    font-size: 14px;
   }
 }
 </style>

@@ -24,7 +24,7 @@
     </group>
 
     <group>
-      <weui-uploader title="上传患者病历" :max="10">
+      <weui-uploader title="上传患者病历" :max="10" v-model="enroll.images">
         <div slot="desc">
           <p class="material-title">材料包含：</p>
           <ul class="material-list">
@@ -68,7 +68,8 @@ export default {
         disease: '', //所患疾病
         address: [], //所在地区
         detailAddress: '', //详细地址
-        comment: '' //备注
+        comment: '', //备注
+        images: []
       },
       list: [['男','女']],
       addressData: ChinaAddressV4Data,
