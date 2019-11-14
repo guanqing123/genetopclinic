@@ -41,7 +41,7 @@
                   </li>
                 </ul>
                 <div class="weui-uploader__input-box">
-                  <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple/>
+                  <input ref="uploaderInput" id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple/>
                 </div>
               </div>
               <div>
@@ -71,7 +71,7 @@ export default {
     },
     max: { // 图片上传最大数
       type: Number,
-      default: 1
+      default: 0
     },
     allowTypes: { // 图片列表范围
       type: Array,
@@ -84,9 +84,7 @@ export default {
   },
   watch: {
     images : function(val, oldVal) {
-      for (var i=0;i<val.length;i++){
-        console.log('i='+i+"\t size="+val[i].size)
-      }
+      this.$emit('update', val)
     }
   },
   data(){
@@ -125,12 +123,11 @@ export default {
     onPreviewClose: function () {
       this.$refs.previewer.photoswipe = null
     },
-    // 压缩图片
-    compressImage: function (file, success, error) {
+    compressImage: function (file, success, error) { // 压缩图片
         // 图片小于1M不压缩
-/*        if (file.size < Math.pow(1024, 2)) {
+        if (file.size < Math.pow(1024, 2)) {
           return success(file);
-        }*/
+        }
 
         const name = file.name; //文件名
         const reader = new FileReader();
@@ -164,7 +161,7 @@ export default {
             const base64 = canvas.toDataURL('image/jpeg', quality); //图片格式jpeg或webp可以选0-1质量区间
 
             // 返回base64转blob的值
-            console.log(`原图${(src.length/1024).toFixed(2)}kb`, `新图${(base64.length/1024).toFixed(2)}kb`);
+            console.log(`原图${(src.length/(1024*1024)).toFixed(2)}mb`, `新图${(base64.length/(1024*1024)).toFixed(2)}mb`);
             //去掉url的头，并转换为byte
             const bytes = window.atob(base64.split(',')[1]);
             //处理异常,将ascii码小于0的转换为大于0
@@ -190,48 +187,47 @@ export default {
   mounted(){
     /*var $gallery = document.getElementById('gallery'),$galleryImg = document.getElementById('galleryImg'),
       $uploaderInput = document.getElementById('uploaderInput'),
-      $uploaderFiles = document.getElementById('uploaderFiles')
-      ;*/
+      $uploaderFiles = document.getElementById('uploaderFiles'),
+      $uploaderInput = document.getElementById('uploaderInput');*/
     var self = this;
-    var $uploaderInput = document.getElementById('uploaderInput');
+    var $uploaderInput = this.$refs.uploaderInput;
 
     $uploaderInput.addEventListener("change",function(e){
       var src, url = window.URL || window.webkitURL || window.mozURL, files = e.target.files;
       for (var i = 0, len = files.length; i < len; ++i) {
         var file = files[i];
-        console.log('1>'+file.name)
         // 判断图片类型
-/*        if (self.allowTypes.indexOf(file.type) === -1) {
-          self.$vux.toast.show({
-            type: 'text',
-            text: '该类型不允许上传!',
-            position: 'top',
-            width: '15em'
-          });
-          continue;
-        }*/
-        if (self.max && self.images.length >= self.max) {
-          if (self.allowTypes.indexOf(file.type) === -1) {
-            self.$vux.toast.show({
-              type: 'text',
-              text: '图片数量超出'+ self.max + '张！',
-              position: 'top',
-              width: '15em'
-            });
-            break;
-          }
+        if (self.allowTypes.length && self.allowTypes.indexOf(file.type) === -1) {
+            self.$show('该类型不允许上传!');
+            continue;
         }
+        // 判断图片数量
+        if (self.max && self.images.length >= self.max) {
+            self.$show('图片数量超出'+ self.max + '张！');
+            break;
+        }
+
         if (url) {
           src = url.createObjectURL(file);
         } else {
           src = e.target.result;
         }
-        self.imgSrc.push("background-image: url("+src+")");
-        self.preSrc.push({msrc:src, src:src});
-        self.compressImage(file, function(file) {
+
+        (function (file, src) {
+          self.compressImage(file, function (file) {
+            self.images.push(file);
+            self.imgSrc.push("background-image: url("+src+")");
+            self.preSrc.push({msrc:src, src:src});
+          }, self.$noop());
+        })(file, src);
+
+        /*self.compressImage(file, function(file) {
           console.log('2>'+file.name)
           self.images.push(file);
-        }, self.$noop());
+          // 涉及变量提升的概念
+          self.imgSrc.push("background-image: url("+src+")");
+          self.preSrc.push({msrc:src, src:src});
+        }, self.$noop());*/
       }
     });
 

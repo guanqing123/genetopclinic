@@ -104,15 +104,20 @@ Installer.install = function (Vue) {
     }
   })
 
+  Vue.prototype.$show = function (msg) {
+    this.$vux.toast.show({
+      text: msg,
+      type: 'text',
+      position: 'top',
+      width: '15em'
+    })
+  }
+
   Vue.prototype.$judgecode = function (res) {
     if (res.data.code != 200) {
-      this.$vux.toast.show({
-        text: res.data.msg,
-        type: 'text',
-        position: 'top'
-      })
+      this.$show(res.data.msg);
     } else {
-      return 1
+      return 1;
     }
   }
 

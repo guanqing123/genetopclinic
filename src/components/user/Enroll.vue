@@ -1,16 +1,16 @@
 <template>
   <div class="enroll">
     <group label-margin-right="2em" label-align="right">
-      <x-input type="text" v-model="enroll.name" placeholder="请填写" required is-type="china-name">
+      <x-input ref="name" type="text" v-model="enroll.name" placeholder="请填写" required is-type="china-name">
         <label slot="label" class="weui-label slot iconfont icon-bitian">姓名：</label>
       </x-input>
-      <x-input type="tel" v-model="enroll.telephone" placeholder="请填写" required is-type="china-mobile">
+      <x-input ref="telephone" type="tel" v-model="enroll.telephone" placeholder="请填写" required is-type="china-mobile">
         <label slot="label" class="weui-label slot iconfont icon-bitian">手机号：</label>
       </x-input>
-      <popup-picker placeholder="请选择" popup-title="性别" :data="list" v-model="enroll.sex" value-text-align="left">
+      <popup-picker placeholder="请选择" popup-title="性别" :data="list" v-model="enroll.sex" value-text-align="left" required>
         <label slot="title" class="weui-label slot iconfont icon-bitian">性别：</label>
       </popup-picker>
-      <x-input type="number" v-model="enroll.age" placeholder="请填写" required>
+      <x-input ref="age" type="number" v-model="enroll.age" placeholder="请填写" required :is-type="ageValue">
         <label slot="label" class="weui-label slot iconfont icon-bitian">年龄：</label>
       </x-input>
       <x-input type="text" v-model="enroll.disease" placeholder="请填写" required>
@@ -74,7 +74,13 @@ export default {
       list: [['男','女']],
       addressData: ChinaAddressV4Data,
       agree: false,
-      show: false
+      show: false,
+      ageValue: function(value) {
+        return {
+          valid: /^[1-9][0-9]?$/.test(value),
+          msg: '年龄范围是0-99岁！'
+        }
+      }
     }
   },
   methods: {
@@ -95,9 +101,29 @@ export default {
       this.agree = true
     },
     commit: function(){
-      this.$router.push({
+      if (!this.$refs.name.valid) {
+        this.$show('请输入正确格式的名字');
+        this.$refs.name.focus();
+        return;
+      }
+      if (!this.$refs.telephone.valid) {
+        this.$show('请输入正确格式的手机');
+        this.$refs.telephone.focus();
+        return;
+      }
+      if (!this.enroll.sex.length) {
+        this.$show('请选择性别');
+        return;
+      }
+      debugger
+      if (!this.$refs.age.valid) {
+        this.$show('请输入正常格式的年龄');
+        this.$refs.age.focus();
+        return;
+      }
+/*      this.$router.push({
         path: '/PersonCenter'
-      })
+      })*/
     }
   },
   components: {
