@@ -13,7 +13,7 @@
       <x-input ref="age" type="number" v-model="enroll.age" placeholder="请填写" required :is-type="ageValue">
         <label slot="label" class="weui-label slot iconfont icon-bitian">年龄：</label>
       </x-input>
-      <x-input type="text" v-model="enroll.disease" placeholder="请填写" required>
+      <x-input ref="disease" type="text" v-model="enroll.disease" placeholder="请填写" required>
         <label slot="label" class="weui-label slot iconfont icon-bitian">所患疾病：</label>
       </x-input>
       <x-address ref="address" title="所在地区" popupTitle="所在地区" :raw-value="false" :list="addressData" placeholder="请选择" value-text-align="left" @on-hide="getAddress">
@@ -62,13 +62,16 @@ export default {
   data(){
     return {
       enroll : {
+        projectid: this.$route.params.projectId,
         name: '', // 姓名
         telephone: '', // 手机号
         sex: [], // 性别
+        age: '', // 年龄
         disease: '', //所患疾病
         address: [], //所在地区
         detailAddress: '', //详细地址
         comment: '', //备注
+        state: '0', //等待审核
         images: []
       },
       list: [['男','女']],
@@ -89,8 +92,7 @@ export default {
         let nameValue = this.$refs['address'].nameValue;
         if (nameValue.length > 0) {
           let names = nameValue.split(' ');
-          this.enroll.address.length = 0;
-          Array.prototype.push.call(this.enroll.address, names);
+          this.$set(this.enroll,'address', names);
         }
       }
     },
@@ -100,30 +102,75 @@ export default {
     agreeDeal: function(){
       this.agree = true
     },
-    commit: function(){
-      if (!this.$refs.name.valid) {
-        this.$show('请输入正确格式的名字');
-        this.$refs.name.focus();
+    commit: function() {
+      var self = this;
+      if (!self.$refs.name.valid) {
+        self.$show('请输入正确格式的名字');
+        self.$refs.name.focus();
         return;
       }
-      if (!this.$refs.telephone.valid) {
-        this.$show('请输入正确格式的手机');
-        this.$refs.telephone.focus();
+      if (!self.$refs.telephone.valid) {
+        self.$show('请输入正确格式的手机');
+        self.$refs.telephone.focus();
         return;
       }
-      if (!this.enroll.sex.length) {
-        this.$show('请选择性别');
+      if (!self.enroll.sex.length) {
+        self.$show('请选择性别');
         return;
       }
-      debugger
-      if (!this.$refs.age.valid) {
-        this.$show('请输入正常格式的年龄');
-        this.$refs.age.focus();
+      if (!self.$refs.age.valid) {
+        self.$show('请输入正常格式的年龄');
+        self.$refs.age.focus();
         return;
       }
-/*      this.$router.push({
-        path: '/PersonCenter'
-      })*/
+      if (!self.enroll.disease.length) {
+        self.$show('请输入所患疾病');
+        self.$refs.disease.focus();
+        return;
+      }
+      if (!self.enroll.address.length) {
+        self.$show('请选择所在地区');
+        return;
+      }
+      if (!self.enroll.images.length) {
+        self.$show('请上传附件');
+        return;
+      }
+      var params = new FormData();
+      params.append('projectid', self.enroll.projectid);
+      params.append('name', self.enroll.name);
+      params.append('telephone', self.enroll.telephone);
+      params.append('sex', self.enroll.sex[0]);
+      params.append('age', self.enroll.age);
+      params.append('disease', self.enroll.disease);
+      params.append('province', self.enroll.address[0]);
+      params.append('city', self.enroll.address[1]);
+      params.append('district', self.enroll.address[2]);
+      params.append('detailAddress', self.enroll.detailAddress);
+      params.append('comment', self.enroll.comment);
+      params.append('state', self.enroll.state);
+      self.enroll.images.forEach(file => {
+        params.append('files', file, file.name);
+      });
+      alert('123');
+      self.$vux.loading.show({
+        text: 'Loading'
+      });
+      self.$axios.post('/enroll/saveEnroll', params, {
+        headers:{
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(res => {
+        if (self.$judgecode(res) === 1){
+          self.$router.push({
+            path: '/PersonCenter'
+          });
+        }
+        self.$vux.loading.hide();
+      }).catch(err => {
+          console.log(err);
+          self.$vux.loading.hide();
+      });
     }
   },
   components: {

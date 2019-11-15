@@ -128,7 +128,6 @@ export default {
         if (file.size < Math.pow(1024, 2)) {
           return success(file);
         }
-
         const name = file.name; //文件名
         const reader = new FileReader();
         reader.readAsDataURL(file);
