@@ -55,7 +55,7 @@ export default {
     //下拉刷新监听
     bindRefresh: function () {
       var self = this;
-      var parent = document.querySelector(".home");
+      var parent = document.querySelector(".pull");
       parent.addEventListener('touchstart', function(e) {
         self.startY = e.touches[0].pageY;
       });

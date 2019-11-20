@@ -1,16 +1,16 @@
 <template>
   <div class="personcenter">
-    <div style="position: fixed; top: 0px; left: 0px; width: 100%">
+    <div style="position: fixed; top: 0px; left: 0px; width: 100%; z-index: 99;">
       <div class="header">
         <img class="head" src="../../assets/icon_home.png"/>
       </div>
       <tab>
-        <tab-item :selected="tabType === 'wait'" @on-item-click="handler">等待审核</tab-item>
-        <tab-item :selected="tabType === 'pass'" @on-item-click="handler">已通过</tab-item>
-        <tab-item :selected="tabType === 'refuse'" @on-item-click="handler">已拒绝</tab-item>
+        <tab-item :selected="tabType === 'Wait'" @on-item-click="handler">等待审核</tab-item>
+        <tab-item :selected="tabType === 'Pass'" @on-item-click="handler">已通过</tab-item>
+        <tab-item :selected="tabType === 'Refuse'" @on-item-click="handler">已拒绝</tab-item>
       </tab>
     </div>
-    <router-view style="margin-top: 204px"></router-view>
+    <router-view style="margin-top: 204px;"></router-view>
   </div>
 </template>
 
@@ -29,26 +29,63 @@ export default {
   },
   created(){
     var self = this;
-    self.$set(self, 'tabType', 'wait')
+    self.$set(self, 'tabType', this.$route.name);
+  },
+  mounted(){
+    var self = this;
+    this.$nextTick(function(){
+      self.moveAdjustment();
+    });
   },
   methods: {
+    moveAdjustment: function(){
+      /*var a = document.documentElement;
+      document.documentElement.ontouchmove = function(t) {
+        // 判断默认行为是否可以被禁用
+        if (t.cancelable) {
+          // 判断默认行为是否已经被禁用
+          if (!t.defaultPrevented) {
+            t.preventDefault();
+          }
+        }
+      }
+      document.querySelector('.personcenter').addEventListener("touchmove", function(e) {
+        // 判断默认行为是否可以被禁用
+        if (e.cancelable) {
+          // 判断默认行为是否已经被禁用
+          if (!e.defaultPrevented) {
+            t.preventDefault();
+          }
+        }
+      }, false);
+      var t = document.querySelector(".enrollList");
+      t.addEventListener("touchstart", function(e) {
+        var i = e.touches[0].clientY;
+        t.ontouchmove = function(e) {
+          var s = e.touches[0].clientY
+            , n = t.scrollTop
+            , a = t.scrollHeight - t.clientHeight;
+          0 === n ? i < s ? e.preventDefault() : e.stopPropagation() : n === a ? i > s ? e.preventDefault() : e.stopPropagation() : n > 0 && n < a ? e.stopPropagation() : e.preventDefault()
+        }
+      }, !1);*/
+    },
     handler: function(index) {
       var self = this
       switch(index) {
         case 0:
-          self.$set(self, 'tabType', 'wait')
+          self.$set(self, 'tabType', 'Wait')
           self.$router.push({
             name: 'Wait'
           })
           break;
         case 1:
-          self.$set(self, 'tabType', 'pass')
+          self.$set(self, 'tabType', 'Pass')
           self.$router.push({
             name: 'Pass'
           })
           break;
         case 2:
-          self.$set(self, 'tabType', 'refuse')
+          self.$set(self, 'tabType', 'Refuse')
           self.$router.push({
             name: 'Refuse'
           })

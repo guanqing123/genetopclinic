@@ -9,7 +9,7 @@
         <img slot="icon-active" src="../../assets/icon_home_selected.png"/>
         <p slot="label">首页</p>
       </tabbar-item>
-      <tabbar-item :selected="$route.name==='PersonCenter'||$route.name==='Wait'" @on-item-click="itemClick('/PersonCenter')">
+      <tabbar-item :selected="$route.name==='PersonCenter'||$route.fullPath.indexOf('PersonCenter')!=-1" @on-item-click="itemClick('/PersonCenter')">
         <img slot="icon" src="../../assets/icon_personcenter.png"/>
         <img slot="icon-active" src="../../assets/icon_personcenter.selected.png"/>
         <p slot="label">个人中心</p>

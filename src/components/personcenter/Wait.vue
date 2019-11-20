@@ -3,9 +3,9 @@
     <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" @doRefresh="doRefresh" @nextPage="nextPage">
       <box gap="5px 0px 10px 10px">
         <div class="result-info">共获得约<span class="number-info" v-html="total"></span>条结果</div>
-        <div class="project-item" v-for="project in projectList" :key="project.id" @click="goProject(project)">
+        <div class="project-item" v-for="enroll in enrollList" :key="enroll.enrollid" @click="goProject(enroll)">
           <div class="img-box">
-            <img :src="project.fileRealPath"/>
+            <img :src="enroll.sltPath"/>
           </div>
           <div class="info-box">
             <flexbox>
@@ -18,7 +18,7 @@
               <flexbox-item><div class="desc">项目用药: PD-1</div></flexbox-item>
             </flexbox>
             <flexbox>
-              <flexbox-item><span class="state">进行中</span><span class="date">截止时间:{{project.createDate}}</span></flexbox-item>
+              <flexbox-item><span class="state">进行中</span><span class="date">截止时间:</span></flexbox-item>
             </flexbox>
           </div>
         </div>
@@ -33,10 +33,11 @@ export default {
   name: "wait",
   data(){
     return {
-      projectList: [], //项目列表
+      enrollList: [], //报名列表
       pages: 0, //总页数
       currentPage: 1, //当前页数
-      total: 0 //总条数
+      total: 0, //总条数
+      state: 0  //等待审核
     }
   },
   created(){
@@ -51,19 +52,13 @@ export default {
         params: {projectId: project.id}
       })
     },
-    beginSearch: function (value) {
-      alert('beginSearch:'+value+'searchText:'+this.searchText)
-    },
-    cancel: function () {
-      alert(this.searchText)
-    },
     //执行下拉释放刷新
     doRefresh: function () {
       var self = this;
       self.$set(self, 'currentPage', 1);
       self.$set(self, 'pages', 0);
       self.$set(self, 'total', 0);
-      self.$set(self, 'projectList', []);
+      self.$set(self, 'enrollList', []);
       self.getProjectList(); // 开始查询
     },
     nextPage: function () {
@@ -75,9 +70,9 @@ export default {
       self.$vux.loading.show({
         text: 'Loading'
       });
-      self.$axios.get('/sellactivity/getSellingActivityFenye',{
+      self.$axios.get('/enroll/getEnrollList',{
         params: {
-          userid : '180321105710',
+          state : self.state,
           pageNum: self.currentPage,
           pageSize: 10
         }
@@ -87,10 +82,10 @@ export default {
           self.total = data.total
           self.pages = data.pages
           if (self.currentPage === 1) {
-            self.$set(self, 'projectList', data.list);
+            self.$set(self, 'enrollList', data.records);
           } else {
-            let newArray = self.projectList.concat(data.list);
-            self.$set(self, 'projectList', newArray);
+            let newArray = self.enrollList.concat(data.records);
+            self.$set(self, 'enrollList', newArray);
           }
           self.currentPage ++
           // 关闭下拉
