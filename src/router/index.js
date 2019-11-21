@@ -34,7 +34,10 @@ export default new VueRouter({
             {
               path: 'Wait',
               name: 'Wait',
-              component: () => import('../components/personcenter/Wait')
+              component: () => import('../components/personcenter/Wait'),
+              meta: {
+                title: '个人中心'
+              }
             },
             {
               path: 'Pass',

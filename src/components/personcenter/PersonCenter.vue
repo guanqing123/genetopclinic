@@ -1,6 +1,6 @@
 <template>
   <div class="personcenter">
-    <div style="position: fixed; top: 0px; left: 0px; width: 100%; z-index: 99;">
+    <div style="position: absolute; top: 0px; left: 0px; width: 100%; z-index: 99;">
       <div class="header">
         <img class="head" src="../../assets/icon_home.png"/>
       </div>

@@ -89,6 +89,7 @@ export default {
   },
   data(){
     return {
+      src: '',
       defaultImg: 'background-image:url('+require('../../assets/pic_160.png')+')',
       imgSrc: [],
       preSrc: [],
@@ -124,6 +125,7 @@ export default {
       this.$refs.previewer.photoswipe = null
     },
     compressImage: function (file, success, error) { // 压缩图片
+        var self = this;
         // 图片小于1M不压缩
         if (file.size < Math.pow(1024, 2)) {
           return success(file);
@@ -139,7 +141,7 @@ export default {
           img.onload = function (e) {
             const w = img.width;
             const h = img.height;
-            const quality = 0.8; // 默认图片质量为0.92
+            const quality = 0.5; // 默认图片质量为0.92
             // 生成canvas
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -181,6 +183,187 @@ export default {
         reader.onerror = function (e) {
           error(e);
         }
+    },
+    detectVerticalSquash: function(img) {
+      // 拍照在IOS7或以下的机型会出现照片被压扁的bug
+      var data
+      var ih = img.naturalHeight
+      var canvas = document.createElement('canvas')
+      canvas.width = 1
+      canvas.height = ih
+      var ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0)
+      try {
+        data = ctx.getImageData(0, 0, 1, ih).data
+      } catch (err) {
+        console.log('Cannot check verticalSquash: CORS?')
+        return 1
+      }
+      var sy = 0
+      var ey = ih
+      var py = ih
+      while (py > sy) {
+        var alpha = data[(py - 1) * 4 + 3]
+        if (alpha === 0) {
+          ey = py
+        } else {
+          sy = py
+        }
+        py = (ey + sy) >> 1 // py = parseInt((ey + sy) / 2)
+      }
+      var ratio = (py / ih)
+      return (ratio === 0) ? 1 : ratio
+    },
+    dataURItoBuffer: function(dataURI) {
+      var byteString = atob(dataURI.split(',')[1])
+      var buffer = new ArrayBuffer(byteString.length)
+      var view = new Uint8Array(buffer)
+      for (var i = 0; i < byteString.length; i++) {
+        view[i] = byteString.charCodeAt(i)
+      }
+      return buffer
+    },
+    dataURItoBlob: function(dataURI) {
+      var self = this;
+      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+      var buffer = self.dataURItoBuffer(dataURI)
+      return new Blob([buffer], {type: mimeString})
+    },
+    getOrientation: function(buffer) {
+      var view = new DataView(buffer)
+      if (view.getUint16(0, false) != 0xFFD8) return -2
+      var length = view.byteLength, offset = 2
+      while (offset < length) {
+        var marker = view.getUint16(offset, false)
+        offset += 2
+        if (marker == 0xFFE1) {
+          if (view.getUint32(offset += 2, false) != 0x45786966) return -1
+          var little = view.getUint16(offset += 6, false) == 0x4949
+          offset += view.getUint32(offset + 4, little)
+          var tags = view.getUint16(offset, little)
+          offset += 2
+          for (var i = 0; i < tags; i++)
+          {
+            if (view.getUint16(offset + (i * 12), little) == 0x0112)
+            {return view.getUint16(offset + (i * 12) + 8, little);}
+          }
+        } else if ((marker & 0xFF00) != 0xFF00) break
+        else offset += view.getUint16(offset, false)
+      }
+      return -1
+    },
+    orientationHelper: function(canvas, ctx, orientation) {
+      const w = canvas.width, h = canvas.height
+      if (orientation > 4) {
+        canvas.width = h
+        canvas.height = w
+      }
+      switch (orientation) {
+        case 2:
+          ctx.translate(w, 0)
+          ctx.scale(-1, 1)
+          break
+        case 3:
+          ctx.translate(w, h)
+          ctx.rotate(Math.PI)
+          break
+        case 4:
+          ctx.translate(0, h)
+          ctx.scale(1, -1)
+          break
+        case 5:
+          ctx.rotate(0.5 * Math.PI)
+          ctx.scale(1, -1)
+          break
+        case 6:
+          ctx.rotate(0.5 * Math.PI)
+          ctx.translate(0, -h)
+          break
+        case 7:
+          ctx.rotate(0.5 * Math.PI)
+          ctx.translate(w, -h)
+          ctx.scale(-1, 1)
+          break
+        case 8:
+          ctx.rotate(-0.5 * Math.PI)
+          ctx.translate(-w, 0)
+          break
+      }
+    },
+    compress: function(file, options, callback) {
+      var self = this;
+      const reader = new FileReader()
+      reader.onload = function (evt) {
+        if (options.compress === false) {
+          // 不启用压缩 & base64上传 的分支，不做任何处理，直接返回文件的base64编码
+          file.base64 = evt.target.result
+          callback(file)
+          return
+        }
+
+        // 启用压缩的分支
+        const img = new Image()
+        img.onload = function () {
+          const ratio = self.detectVerticalSquash(img)
+          const orientation = self.getOrientation(self.dataURItoBuffer(img.src))
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+
+          const maxW = options.compress.width
+          const maxH = options.compress.height
+          let w = img.width
+          let h = img.height
+          let dataURL
+
+          if (w < h && h > maxH) {
+            w = parseInt(maxH * img.width / img.height)
+            h = maxH
+          } else if (w >= h && w > maxW) {
+            h = parseInt(maxW * img.height / img.width)
+            w = maxW
+          }
+
+          canvas.width = w
+          canvas.height = h
+          debugger
+          if (orientation > 0) {
+            self.orientationHelper(canvas, ctx, orientation)
+          }
+          ctx.drawImage(img, 0, 0, w, h / ratio)
+
+          if (/image\/jpeg/.test(file.type) || /image\/jpg/.test(file.type)) {
+            dataURL = canvas.toDataURL('image/jpeg', options.compress.quality)
+          } else {
+            dataURL = canvas.toDataURL(file.type, options.compress.quality)
+          }
+
+          if (options.type == 'file') {
+            if (/;base64,null/.test(dataURL) || /;base64,$/.test(dataURL)) {
+              // 压缩出错，以文件方式上传的，采用原文件上传
+              console.warn('Compress fail, dataURL is ' + dataURL + '. Next will use origin file to upload.')
+              callback(file)
+            } else {
+              let blob = self.dataURItoBlob(dataURL)
+              blob.id = file.id
+              blob.name = file.name
+              blob.lastModified = file.lastModified
+              blob.lastModifiedDate = file.lastModifiedDate
+              callback(blob)
+            }
+          } else {
+            if (/;base64,null/.test(dataURL) || /;base64,$/.test(dataURL)) {
+              // 压缩失败，以base64上传的，直接报错不上传
+              options.onError(file, new Error('Compress fail, dataURL is ' + dataURL + '.'))
+              callback()
+            } else {
+              file.base64 = dataURL
+              callback(file)
+            }
+          }
+        }
+        img.src = evt.target.result
+      }
+      reader.readAsDataURL(file)
     }
   },
   mounted(){
@@ -206,24 +389,35 @@ export default {
             break;
         }
 
-        if (url) {
+        /*if (url) {
           src = url.createObjectURL(file);
         } else {
           src = e.target.result;
         }
-
         (function (file, src) {
           self.compressImage(file, function (file) {
             self.images.push(file);
             self.imgSrc.push("background-image: url("+src+")");
             self.preSrc.push({msrc:src, src:src});
           }, self.$noop());
-        })(file, src);
+        })(file, src);*/
+
+        (function(file, url, e){
+          self.compress(file, {type: 'file',compress: {width:800, height: 800, quality: 0.8}} , function(file){
+            self.images.push(file);
+            if (url) {
+              src = url.createObjectURL(file);
+            } else {
+              src = e.target.result;
+            }
+            self.imgSrc.push("background-image: url("+src+")");
+            self.preSrc.push({msrc:src, src:src});
+          });
+        })(file, url, e);
 
         /*self.compressImage(file, function(file) {
-          console.log('2>'+file.name)
           self.images.push(file);
-          // 涉及变量提升的概念
+          // 涉及变量提升的概念,更改为闭包
           self.imgSrc.push("background-image: url("+src+")");
           self.preSrc.push({msrc:src, src:src});
         }, self.$noop());*/

@@ -152,7 +152,6 @@ export default {
       self.enroll.images.forEach(file => {
         params.append('files', file, file.name);
       });
-      alert('123');
       self.$vux.loading.show({
         text: 'Loading'
       });
@@ -168,6 +167,7 @@ export default {
         }
         self.$vux.loading.hide();
       }).catch(err => {
+          alert('err>' + err);
           console.log(err);
           self.$vux.loading.hide();
       });

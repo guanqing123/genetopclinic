@@ -36,6 +36,7 @@
         enrollList: [], //报名列表
         pages: 0, //总页数
         currentPage: 1, //当前页数
+        pageSize: 10, //每页几条
         total: 0, //总条数
         state: 1  //等待审核
       }
@@ -74,7 +75,7 @@
           params: {
             state : self.state,
             pageNum: self.currentPage,
-            pageSize: 3
+            pageSize: self.pageSize
           }
         }).then(res => {
           if (self.$judgecode(res) === 1){
