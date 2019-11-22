@@ -1,6 +1,6 @@
 <template>
   <div class="wait pull">
-    <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" @doRefresh="doRefresh" @nextPage="nextPage">
+    <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" :pull-down="false" @nextPage="nextPage">
       <box gap="5px 0px 10px 10px">
         <div class="result-info">共获得约<span class="number-info" v-html="total"></span>条结果</div>
         <div class="project-item" v-for="enroll in enrollList" :key="enroll.enrollid" @click="goProject(enroll)">
@@ -9,17 +9,20 @@
           </div>
           <div class="info-box">
             <flexbox>
-              <flexbox-item><div class="title">招募EGFR突变非小细胞癌地方发电房地方发大发发电房发放大幅度的发的</div></flexbox-item>
+              <flexbox-item><div class="title">{{enroll.xmmc}}</div></flexbox-item>
             </flexbox>
             <flexbox>
-              <flexbox-item><div class="subtitle">适应症: EGFR突变的非小细胞癌</div></flexbox-item>
+              <flexbox-item><div class="subtitle">所患疾病: {{enroll.disease}}</div></flexbox-item>
             </flexbox>
             <flexbox>
-              <flexbox-item><div class="desc">项目用药: PD-1</div></flexbox-item>
+              <flexbox-item><div class="desc">手机号: {{enroll.telephone}}</div></flexbox-item>
             </flexbox>
             <flexbox>
-              <flexbox-item><span class="state">进行中</span><span class="date">截止时间:</span></flexbox-item>
+              <flexbox-item><span class="state">通过审核</span><span class="date">用户名: {{enroll.name}}</span></flexbox-item>
             </flexbox>
+          </div>
+          <div class="detail-info">
+            <span class="detail-content" @click="goDetail(enroll)">详情</span>
           </div>
         </div>
       </box>
@@ -28,7 +31,7 @@
 </template>
 
 <script>
-  import { Box, Flexbox, FlexboxItem} from 'vux'
+  import { Box, Flexbox, FlexboxItem, XButton} from 'vux'
   export default {
     name: "pass",
     data(){
@@ -42,12 +45,12 @@
       }
     },
     created(){
-      this.getProjectList();
+      this.doRefresh();
     },
     methods: {
       // 跳转详情
-      goProject: function (project) {
-        console.log(project)
+      goDetail: function (enroll) {
+        console.log(enroll)
         this.$router.push({
           name: 'Project',
           params: {projectId: project.id}
@@ -60,13 +63,13 @@
         self.$set(self, 'pages', 0);
         self.$set(self, 'total', 0);
         self.$set(self, 'enrollList', []);
-        self.getProjectList(); // 开始查询
+        self.getEnrollList(); // 开始查询
       },
       nextPage: function () {
         var self = this;
-        self.getProjectList();
+        self.getEnrollList();
       },
-      getProjectList() {
+      getEnrollList() {
         var self = this;
         self.$vux.loading.show({
           text: 'Loading'
@@ -100,6 +103,7 @@
       }
     },
     components: {
+      XButton,
       Box,
       Flexbox,
       FlexboxItem
@@ -110,6 +114,7 @@
 <style scoped lang="less">
   @width114: 114px;
   @width94: 94px;
+  @width50: 50px;
   @fontColor: rgb(153, 153, 153);
 
   .wait {
@@ -144,9 +149,21 @@
         height: 100%;
       }
     }
-    .info-box {
+    .detail-info {
       float: right;
-      width: calc(~"100% - @{width94}");
+      width: @width50;
+      height: 100%;
+      text-align: center;
+      color: #09bb07;
+      line-height: @width114;
+      .detail-content {
+        border: 1px solid #09bb07;
+        border-radius: 15px;
+      }
+    }
+    .info-box {
+      float: left;
+      width: calc(~"100% - @{width94} - @{width50}");
       height: 100%;
       box-sizing: border-box;
       padding: 10px 10px;

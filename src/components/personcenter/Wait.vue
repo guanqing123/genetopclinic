@@ -1,34 +1,45 @@
 <template>
   <div class="wait pull">
-    <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" @doRefresh="doRefresh" @nextPage="nextPage">
+    <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" :pull-down="false" @nextPage="nextPage">
       <box gap="5px 0px 10px 10px">
         <div class="result-info">共获得约<span class="number-info" v-html="total"></span>条结果</div>
-        <div class="project-item" v-for="enroll in enrollList" :key="enroll.enrollid" @click="goProject(enroll)">
-          <div class="img-box">
-            <img :src="enroll.sltPath"/>
-          </div>
-          <div class="info-box">
-            <flexbox>
-              <flexbox-item><div class="title">招募EGFR突变非小细胞癌地方发电房地方发大发发电房发放大幅度的发的</div></flexbox-item>
-            </flexbox>
-            <flexbox>
-              <flexbox-item><div class="subtitle">适应症: EGFR突变的非小细胞癌</div></flexbox-item>
-            </flexbox>
-            <flexbox>
-              <flexbox-item><div class="desc">项目用药: PD-1</div></flexbox-item>
-            </flexbox>
-            <flexbox>
-              <flexbox-item><span class="state">进行中</span><span class="date">截止时间:</span></flexbox-item>
-            </flexbox>
-          </div>
-        </div>
+
+        <swipeout>
+          <swipeout-item :threshold=".5" v-for="enroll in enrollList" :key="enroll.enrollid" transition-mode="follow">
+            <div slot="right-menu">
+              <swipeout-button @click.native="onExploreClick(enroll)" type="primary">详情</swipeout-button>
+              <swipeout-button @click.native="onDeleteClick(enroll)" type="warn">删除</swipeout-button>
+            </div>
+            <div slot="content" class="project-item">
+              <div class="img-box">
+                <img :src="enroll.sltPath"/>
+              </div>
+              <div class="info-box">
+                <flexbox>
+                  <flexbox-item><div class="title">{{enroll.xmmc}}</div></flexbox-item>
+                </flexbox>
+                <flexbox>
+                  <flexbox-item><div class="subtitle">所患疾病: {{enroll.disease}}</div></flexbox-item>
+                </flexbox>
+                <flexbox>
+                  <flexbox-item><div class="desc">手机号: {{enroll.telephone}}</div></flexbox-item>
+                </flexbox>
+                <flexbox>
+                  <flexbox-item><span class="state">等待审核</span><span class="date">用户名: {{enroll.name}}</span></flexbox-item>
+                </flexbox>
+              </div>
+            </div>
+          </swipeout-item>
+        </swipeout>
+
       </box>
     </pull-up-down>
   </div>
 </template>
 
 <script>
-import { Box, Flexbox, FlexboxItem} from 'vux'
+import { Box, Swipeout, SwipeoutItem, SwipeoutButton, Flexbox, FlexboxItem} from 'vux'
+import qs from 'Qs'
 export default {
   name: "wait",
   data(){
@@ -42,17 +53,9 @@ export default {
     }
   },
   created(){
-    this.getProjectList();
+    this.doRefresh();
   },
   methods: {
-    // 跳转详情
-    goProject: function (project) {
-      console.log(project)
-      this.$router.push({
-        name: 'Project',
-        params: {projectId: project.id}
-      })
-    },
     //执行下拉释放刷新
     doRefresh: function () {
       var self = this;
@@ -60,13 +63,13 @@ export default {
       self.$set(self, 'pages', 0);
       self.$set(self, 'total', 0);
       self.$set(self, 'enrollList', []);
-      self.getProjectList(); // 开始查询
+      self.getEnrollList(); // 开始查询
     },
     nextPage: function () {
       var self = this;
-      self.getProjectList();
+      self.getEnrollList();
     },
-    getProjectList() {
+    getEnrollList() {
       var self = this;
       self.$vux.loading.show({
         text: 'Loading'
@@ -97,9 +100,46 @@ export default {
         console.log(err)
         this.$vux.loading.hide()
       })
+    },
+    onExploreClick: function (enroll) {
+      this.$router.push({
+        name: '',
+        params: {projectId: project.projectid}
+      })
+    },
+    onDeleteClick: function (enroll) {
+        var self = this;
+        this.$vux.confirm.show({
+          title: '确认删除此报名',
+          content: `${enroll.xmmc}`,
+          onConfirm () {
+            self.$vux.loading.show({
+              text: 'Loading'
+            });
+            self.$axios.post('/enroll/deleteEnroll',
+                qs.stringify({
+                  enrollid: enroll.enrollid
+                })
+             )
+            .then(function (response) {
+              if (self.$judgecode(response) == 1) {
+                self.doRefresh();
+              }
+              self.$vux.loading.hide();
+              self.$show('删除成功');
+             })
+            .catch(function (error) {
+              self.$vux.loading.hide();
+              self.$show('网络异常')
+            });
+          }
+        })
     }
   },
   components: {
+    SwipeoutButton,
+    SwipeoutItem,
+    Swipeout,
     Box,
     Flexbox,
     FlexboxItem
@@ -174,7 +214,7 @@ export default {
       color: @fontColor;
     }
     .state {
-      background-color: rgb(60,176,52);
+      background-color: rgb(255, 167, 0);
       font-size: 12px;
       display: inline-block;
       height: 20px;

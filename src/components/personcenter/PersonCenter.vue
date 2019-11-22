@@ -31,12 +31,6 @@ export default {
     var self = this;
     self.$set(self, 'tabType', this.$route.name);
   },
-  mounted(){
-    var self = this;
-    this.$nextTick(function(){
-      self.moveAdjustment();
-    });
-  },
   methods: {
     moveAdjustment: function(){
       /*var a = document.documentElement;

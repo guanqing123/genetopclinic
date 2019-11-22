@@ -14,7 +14,16 @@
 <script>
 export default {
   name: "pull-up-down",
-  props: ['count', 'currentPage', 'sum'], //总页数,当前页码
+  props: { //总页数,当前页码
+    count : Number,
+    currentPage: Number,
+    sum: Number,
+    pullDown: {
+      type: Boolean,
+      default: true
+    }
+  },
+  // props: ['count', 'currentPage', 'sum'],
   data(){
     return {
       oldScrollTop: 0, //上一次滚动的位置
@@ -132,7 +141,8 @@ export default {
   mounted(){
     var self = this;
     //下拉刷新监听
-    self.bindRefresh();
+    if (self.pullDown)
+      self.bindRefresh();
   }
 }
 </script>

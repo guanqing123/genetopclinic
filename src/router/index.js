@@ -74,6 +74,14 @@ export default new VueRouter({
       meta: {
         title: '我要参加'
       }
+    },
+    {
+      path: '/Explore',
+      name: 'Explore',
+      component: () => import('../components/personcenter/Explore'),
+      meta: {
+        title: '报名详情'
+      }
     }
   ]
 })
