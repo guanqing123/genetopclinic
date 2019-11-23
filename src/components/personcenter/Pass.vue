@@ -3,35 +3,43 @@
     <pull-up-down ref="pull" :count="pages" :current-page="currentPage" :sum="total" :pull-down="false" @nextPage="nextPage">
       <box gap="5px 0px 10px 10px">
         <div class="result-info">共获得约<span class="number-info" v-html="total"></span>条结果</div>
-        <div class="project-item" v-for="enroll in enrollList" :key="enroll.enrollid" @click="goProject(enroll)">
-          <div class="img-box">
-            <img :src="enroll.sltPath"/>
-          </div>
-          <div class="info-box">
-            <flexbox>
-              <flexbox-item><div class="title">{{enroll.xmmc}}</div></flexbox-item>
-            </flexbox>
-            <flexbox>
-              <flexbox-item><div class="subtitle">所患疾病: {{enroll.disease}}</div></flexbox-item>
-            </flexbox>
-            <flexbox>
-              <flexbox-item><div class="desc">手机号: {{enroll.telephone}}</div></flexbox-item>
-            </flexbox>
-            <flexbox>
-              <flexbox-item><span class="state">通过审核</span><span class="date">用户名: {{enroll.name}}</span></flexbox-item>
-            </flexbox>
-          </div>
-          <div class="detail-info">
-            <span class="detail-content" @click="goDetail(enroll)">详情</span>
-          </div>
-        </div>
+
+        <swipeout>
+          <swipeout-item :threshold=".5" v-for="enroll in enrollList" :key="enroll.enrollid" transition-mode="follow">
+            <div slot="right-menu">
+              <swipeout-button @click.native="onExploreClick(enroll)" type="primary">详情</swipeout-button>
+            </div>
+
+            <div slot="content" class="project-item">
+              <div class="img-box">
+                <img :src="enroll.sltPath"/>
+              </div>
+              <div class="info-box">
+                <flexbox>
+                  <flexbox-item><div class="title">{{enroll.xmmc}}</div></flexbox-item>
+                </flexbox>
+                <flexbox>
+                  <flexbox-item><div class="subtitle">所患疾病: {{enroll.disease}}</div></flexbox-item>
+                </flexbox>
+                <flexbox>
+                  <flexbox-item><div class="desc">手机号: {{enroll.telephone}}</div></flexbox-item>
+                </flexbox>
+                <flexbox>
+                  <flexbox-item><span class="state">通过审核</span><span class="date">用户名: {{enroll.name}}</span></flexbox-item>
+                </flexbox>
+              </div>
+            </div>
+
+          </swipeout-item>
+        </swipeout>
+
       </box>
     </pull-up-down>
   </div>
 </template>
 
 <script>
-  import { Box, Flexbox, FlexboxItem, XButton} from 'vux'
+  import { Box, Swipeout, SwipeoutItem, SwipeoutButton, Flexbox, FlexboxItem } from 'vux'
   export default {
     name: "pass",
     data(){
@@ -41,21 +49,13 @@
         currentPage: 1, //当前页数
         pageSize: 10, //每页几条
         total: 0, //总条数
-        state: 1  //等待审核
+        state: 1  //通过审核
       }
     },
     created(){
       this.doRefresh();
     },
     methods: {
-      // 跳转详情
-      goDetail: function (enroll) {
-        console.log(enroll)
-        this.$router.push({
-          name: 'Project',
-          params: {projectId: project.id}
-        })
-      },
       //执行下拉释放刷新
       doRefresh: function () {
         var self = this;
@@ -100,11 +100,19 @@
           console.log(err)
           this.$vux.loading.hide()
         })
+      },
+      onExploreClick: function (enroll) {
+        this.$router.push({
+          name: 'Explore',
+          params: {enrollid: enroll.enrollid}
+        })
       }
     },
     components: {
-      XButton,
       Box,
+      Swipeout,
+      SwipeoutItem,
+      SwipeoutButton,
       Flexbox,
       FlexboxItem
     }
@@ -114,7 +122,6 @@
 <style scoped lang="less">
   @width114: 114px;
   @width94: 94px;
-  @width50: 50px;
   @fontColor: rgb(153, 153, 153);
 
   .wait {
@@ -149,21 +156,9 @@
         height: 100%;
       }
     }
-    .detail-info {
-      float: right;
-      width: @width50;
-      height: 100%;
-      text-align: center;
-      color: #09bb07;
-      line-height: @width114;
-      .detail-content {
-        border: 1px solid #09bb07;
-        border-radius: 15px;
-      }
-    }
     .info-box {
       float: left;
-      width: calc(~"100% - @{width94} - @{width50}");
+      width: calc(~"100% - @{width94}");
       height: 100%;
       box-sizing: border-box;
       padding: 10px 10px;

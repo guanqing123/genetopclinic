@@ -25,15 +25,15 @@
 
     <group>
       <weui-uploader title="上传患者病历" :max="10" v-model="enroll.images">
-        <div slot="desc">
-          <p class="material-title">材料包含：</p>
-          <ul class="material-list">
-            <li>最近一次CT报告</li>
-            <li>最近的出院小结或病程记录</li>
-            <li>检查记录</li>
-          </ul>
-        </div>
-      </weui-uploader>
+      <div slot="desc">
+        <p class="material-title">材料包含：</p>
+        <ul class="material-list">
+          <li>最近一次CT报告</li>
+          <li>最近的出院小结或病程记录</li>
+          <li>检查记录</li>
+        </ul>
+      </div>
+    </weui-uploader>
       <div class="weui-cell">
         <check-icon :value.sync="agree">我同意</check-icon>
         <a href="javascript:;" @click="clickDeal" class="confirm">《某某协议》</a>

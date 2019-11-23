@@ -76,6 +76,10 @@ export default {
     allowTypes: { // 图片列表范围
       type: Array,
       default: () => []
+    },
+    imgSrc: {
+      type: Array,
+      default: () => []
     }
   },
   model: {
@@ -91,7 +95,7 @@ export default {
     return {
       src: '',
       defaultImg: 'background-image:url('+require('../../assets/pic_160.png')+')',
-      imgSrc: [],
+      // imgSrc: [],
       preSrc: [],
       options: {
         getThumbBoundsFn (index) {

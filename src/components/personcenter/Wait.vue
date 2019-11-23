@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { Box, Swipeout, SwipeoutItem, SwipeoutButton, Flexbox, FlexboxItem} from 'vux'
+import { Box, Swipeout, SwipeoutItem, SwipeoutButton, Flexbox, FlexboxItem } from 'vux'
 import qs from 'Qs'
 export default {
   name: "wait",
@@ -103,8 +103,8 @@ export default {
     },
     onExploreClick: function (enroll) {
       this.$router.push({
-        name: '',
-        params: {projectId: project.projectid}
+        name: 'Explore',
+        params: {enrollid: enroll.enrollid}
       })
     },
     onDeleteClick: function (enroll) {

@@ -76,11 +76,19 @@ export default new VueRouter({
       }
     },
     {
-      path: '/Explore',
+      path: '/Explore/:enrollid',
       name: 'Explore',
       component: () => import('../components/personcenter/Explore'),
       meta: {
         title: '报名详情'
+      }
+    },
+    {
+      path: '/EnrollEdit/:enrollid',
+      name: 'EnrollEdit',
+      component: () => import('../components/personcenter/EnrollEdit'),
+      meta: {
+        title: '修改报名'
       }
     }
   ]
