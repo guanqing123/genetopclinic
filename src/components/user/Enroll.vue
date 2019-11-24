@@ -48,6 +48,14 @@
       @on-confirm="agreeDeal">
       <div class="content">夏日总是燥热的，在这个偏僻的小山村，住着几百庄稼人，还有这排列整齐却显破旧的房屋。纵使夏日骄阳，汗流浃背，人们也不舍得休息。只有在一处房屋前，有几人在焦急的等待，里面还时不时的传出几声妇人的痛苦的呻吟声。没过多久，里面传来了婴儿的啼哭，所有人都松了一口气。就在所有人都认为一切已经皆大欢喜，准备办一场酒宴的时候，一阵骚乱传来，里面的孕妇血崩死了。有人在这个世上出生，就有人死亡，或许他的命运就是从此刻开始改变的.时间如流水般，静静地流淌，转瞬之间，已是十五年后，当初的婴孩也步入了少年时期，这个年纪，本该是肆意张扬，潇洒快活的时候，而少年却无法像同龄人一般肆意玩闹，他每天都很忙很累。不是像别人一样被敦促学习，对于他来说，学不学习都不重要了，因为将这高中读完，他就只能缀学回家，帮父母料理农活。实际上，从很久之前，他就开始下地干活了，每天除了学习之外，其余的时间都是在田野里度过的。时间如流水般，静静地流淌，转瞬之间，已是十五年后，当初的婴孩也步入了少年时期，这个年纪，本该是肆意张扬，潇洒快活的时候，而少年却无法像同龄人一般肆意玩闹，他每天都很忙很累。不是像别人一样被敦促学习，对于他来说，学不学习都不重要了，因为将这高中读完，他就只能缀学回家，帮父母料理农活。实际上，从很久之前，他就开始下地干活了，每天除了学习之外，其余的时间都是在田野里度过的。时间如流水般，静静地流淌，转瞬之间，已是十五年后，当初的婴孩也步入了少年时期，这个年纪，本该是肆意张扬，潇洒快活的时候，而少年却无法像同龄人一般肆意玩闹，他每天都很忙很累。不是像别人一样被敦促学习，对于他来说，学不学习都不重要了，因为将这高中读完，他就只能缀学回家，帮父母料理农活。实际上，从很久之前，他就开始下地干活了，每天除了学习之外，其余的时间都是在田野里度过的。</div>
     </confirm>
+    <confirm v-model="icode.show" title="验证号码" class="confirm" confirmText="提交" :close-on-confirm="false" @on-confirm="finalCommit">
+        <div>
+            <cell title="手机号" :value="enroll.telephone"></cell>
+            <x-input class="weui-vcode" v-model="enroll.icode" :max="6" placeholder="请输入验证码">
+              <x-button ref="icode" slot="right" :type="icode.buttonType" :text="icode.buttonText" :disabled="icode.disabled" @click.native="getIcode" mini></x-button>
+            </x-input>
+        </div>
+    </confirm>
     <group class="bottom">
       <x-button type="primary" :disabled="!agree" @click.native="commit">提交</x-button>
     </group>
@@ -55,7 +63,7 @@
 </template>
 
 <script>
-import { Group, XInput, PopupPicker, XAddress, ChinaAddressV4Data, XTextarea, XButton, CheckIcon, Confirm } from 'vux'
+import { Group, XInput, PopupPicker, XAddress, ChinaAddressV4Data, XTextarea, XButton, CheckIcon, Confirm, Cell } from 'vux'
 import WeuiUploader from '../common/WeuiUploader'
 export default {
   name: "enroll",
@@ -72,7 +80,15 @@ export default {
         detailAddress: '', //详细地址
         comment: '', //备注
         state: '0', //等待审核
-        images: []
+        images: [], //图片数组
+        icode: '' //验证码
+      },
+      icode: {
+        show: false,
+        buttonType: 'primary',
+        buttonText: '获取验证码',
+        disabled: false,
+        countDown: 60
       },
       list: [['男','女']],
       addressData: ChinaAddressV4Data,
@@ -136,8 +152,62 @@ export default {
         self.$show('请上传附件');
         return;
       }
+      // 验证成功,显示验证码框
+      self.icode.show = true;
+    },
+    getIcode: function() { // 获取验证码
+      var self = this;
+      self.$axios.get(`/enroll/sendIcode?projectid=${this.$route.params.projectId}&telephone=${self.enroll.telephone}`)
+        .then(res => {
+          if (self.$judgecode(res) === 1) {
+            self.$show('验证码发送成功')
+            self.sendSuccess()
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          self.$show('验证码获取失败')
+          self.sendFailure()
+        })
+    },
+    sendSuccess: function() {
+      var self = this
+      self.icode.disabled = true
+      self.icode.buttonType = "default"
+      self.countDown()
+    },
+    sendFailure: function() {
+      var self = this
+      self.icode.disabled = false
+      self.icode.buttonText = "获取验证码"
+      self.icode.buttonType = "primary"
+      self.icode.countDown = 60
+    },
+    countDown: function() {
+      var self = this
+      if (self.icode.countDown <= 0) {
+        self.icode.buttonText = "获取验证码"
+        self.icode.buttonType = "primary"
+        self.icode.disabled = false
+        self.icode.countDown = 60
+      } else {
+        self.icode.buttonText = self.icode.countDown.toString() + 's后重新获取'
+        setTimeout(() => {
+          self.countDown()
+        }, 1000);
+        this.icode.countDown--
+      }
+    },
+    finalCommit: function() {
+      var self = this;
+      if (self.enroll.icode.length!=6) {
+        self.$show('请输入6位验证码');
+        return;
+      }
+      self.icode.show = false;
       var params = new FormData();
       params.append('projectid', self.enroll.projectid);
+      params.append('icode', self.enroll.icode);
       params.append('name', self.enroll.name);
       params.append('telephone', self.enroll.telephone);
       params.append('sex', self.enroll.sex[0]);
@@ -167,9 +237,9 @@ export default {
         }
         self.$vux.loading.hide();
       }).catch(err => {
-          alert('err>' + err);
-          console.log(err);
-          self.$vux.loading.hide();
+        alert('err>' + err);
+        console.log(err);
+        self.$vux.loading.hide();
       });
     }
   },
@@ -183,7 +253,8 @@ export default {
     WeuiUploader,
     XButton,
     CheckIcon,
-    Confirm
+    Confirm,
+    Cell
   }
 }
 </script>

@@ -115,7 +115,7 @@ Installer.install = function (Vue) {
 
   Vue.prototype.$judgecode = function (res) {
     if (res.data.code != 200) {
-      this.$show(res.data.msg);
+      this.$show(res.data.message);
     } else {
       return 1;
     }
