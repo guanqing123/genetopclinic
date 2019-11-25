@@ -329,7 +329,6 @@ export default {
 
           canvas.width = w
           canvas.height = h
-          debugger
           if (orientation > 0) {
             self.orientationHelper(canvas, ctx, orientation)
           }
