@@ -20,7 +20,7 @@ export default {
     del: function(name) {
       let exp = new Date()
       exp.setTime(exp.getTime() - 1)
-      let cval = this.cookie.get(name)
+      let cval = this.get(name)
       if (cval != null) {
         document.cookie = name + '=' + cval + ';expires=' + exp.toUTCString() + ';path=/'
       }

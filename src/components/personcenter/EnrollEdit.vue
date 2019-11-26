@@ -110,7 +110,6 @@ export default {
         }
         self.$vux.loading.hide();
       }).catch(err => {
-        alert('err>' + err);
         console.log(err);
         self.$vux.loading.hide();
       });

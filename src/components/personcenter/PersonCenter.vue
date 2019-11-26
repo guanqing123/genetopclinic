@@ -2,12 +2,13 @@
   <div class="personcenter">
     <div style="position: absolute; top: 0px; left: 0px; width: 100%; z-index: 99;">
       <div class="header">
-        <img class="head" src="../../assets/icon_home.png"/>
+        <img class="headerUrl" :src="headerUrl" @error="imageError"/>
+        <span class="nickName" v-show="nickName.length>0">{{nickName}}</span>
       </div>
       <tab>
-        <tab-item :selected="tabType === 'Wait'" @on-item-click="handler">等待审核</tab-item>
-        <tab-item :selected="tabType === 'Pass'" @on-item-click="handler">已通过</tab-item>
-        <tab-item :selected="tabType === 'Refuse'" @on-item-click="handler">已拒绝</tab-item>
+        <tab-item :selected="$route.name === 'Wait'" @on-item-click="handler">等待审核</tab-item>
+        <tab-item :selected="$route.name === 'Pass'" @on-item-click="handler">已通过</tab-item>
+        <tab-item :selected="$route.name === 'Refuse'" @on-item-click="handler">已拒绝</tab-item>
       </tab>
     </div>
     <router-view style="margin-top: 204px;"></router-view>
@@ -24,14 +25,27 @@ export default {
   },
   data(){
     return {
-      tabType: "" //当前tab类型: wait等待审核,pass:通过,refuse:拒绝
+      tabType: "", //当前tab类型: wait等待审核,pass:通过,refuse:拒绝
     }
   },
-  created(){
-    var self = this;
-    self.$set(self, 'tabType', this.$route.name);
+  computed: {
+    nickName: function() {
+      return this.$store.getters.nickName
+    },
+    headerUrl: {
+      get: function() {
+        return this.$store.getters.headerUrl
+      },
+      set: function(url) {
+        this.$store.commit('updateHeaderUrl', url)
+      }
+    }
   },
   methods: {
+    imageError: function() {
+      var self = this;
+      self.headerUrl = require('../../assets/icon_head.png');
+    },
     moveAdjustment: function(){
       /*var a = document.documentElement;
       document.documentElement.ontouchmove = function(t) {
@@ -67,19 +81,19 @@ export default {
       var self = this
       switch(index) {
         case 0:
-          self.$set(self, 'tabType', 'Wait')
+          // self.$set(self, 'tabType', 'Wait')
           self.$router.push({
             name: 'Wait'
           })
           break;
         case 1:
-          self.$set(self, 'tabType', 'Pass')
+          // self.$set(self, 'tabType', 'Pass')
           self.$router.push({
             name: 'Pass'
           })
           break;
         case 2:
-          self.$set(self, 'tabType', 'Refuse')
+          // self.$set(self, 'tabType', 'Refuse')
           self.$router.push({
             name: 'Refuse'
           })
@@ -99,12 +113,19 @@ export default {
     height: 160px;
     background-image: url("../../assets/bg-header.jpg");
     position: relative;
-    .head{
+    .headerUrl{
       position: absolute;
       left: 10px;
       top: 50px;
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
+      border-radius: 5px;
+    }
+    .nickName {
+      position: absolute;
+      left: 80px;
+      top: 80px;
+      color: white;
     }
   }
 }

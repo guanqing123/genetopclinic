@@ -4,7 +4,20 @@ import '@/assets/font/iconfont.css';
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import router from './router'
+import VueRouter from 'vue-router'
+import Vuex from 'vuex'
+
+
+import createRouter from './router/router'
+import createStore from './store/store'
+
+Vue.use(Vuex)
+Vue.use(VueRouter)
+
+const router = createRouter()
+const store = createStore()
+
+
 import App from './App'
 import common from './plugins/common'
 
@@ -25,6 +38,15 @@ import Axios from 'axios'
 // Axios.defaults.baseURL = 'http://118.190.55.164/gene'
 // Axios.defaults.baseURL = 'http://172.30.8.95:8080/gene'
 Axios.defaults.baseURL = 'http://wxdev.hongyancloud.com/gene'
+Axios.interceptors.request.use(config => {
+  let openId = common.cookie.get('open_id')
+  if (openId) {
+    config.headers.openId = `${openId}`
+  }
+  return config
+}, error => {
+  return Promise.reject(error)
+});
 Vue.prototype.$axios = Axios
 
 import FastClick from 'fastclick'
@@ -32,13 +54,8 @@ FastClick.attach(document.body)
 
 Vue.config.productionTip = false
 
-// store
-import createStore from './store/store'
-const store = createStore()
-
 // 全局导航守卫
 router.beforeEach((to, from, next) => {
-  alert(common.cookie.get('open_id'));
   if (common.isNull(common.cookie.get('open_id'))) {
     var getOpenIdUrl = 'http://wxdev.hongyancloud.com/gene/getWxOpenId'
     getOpenIdUrl += '?toUrl='+encodeURIComponent(window.location.href);
@@ -47,7 +64,10 @@ router.beforeEach((to, from, next) => {
     window.location.href = url
     return false
   }
-
+  if (!store.getters.openId) {
+    var user = {openId: common.cookie.get('open_id'), headerUrl: common.cookie.get('head_url'), nickName: common.cookie.get('nick_name')}
+    store.commit('updateUser', user)
+  }
   /* 路由发生变化修改页面title */
   if (to.meta.title){
     document.title = to.meta.title;
