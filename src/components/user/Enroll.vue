@@ -157,11 +157,14 @@ export default {
     },
     getIcode: function() { // 获取验证码
       var self = this;
+      self.beforeGetIcode();
       self.$axios.get(`/enroll/sendIcode?projectid=${this.$route.params.projectId}&telephone=${self.enroll.telephone}`)
         .then(res => {
           if (self.$judgecode(res) === 1) {
             self.$show('验证码发送成功')
             self.sendSuccess()
+          }else{
+            self.sendFailure()
           }
         })
         .catch(err => {
@@ -169,6 +172,11 @@ export default {
           self.$show('验证码获取失败')
           self.sendFailure()
         })
+    },
+    beforeGetIcode: function() {
+      var self = this
+      self.icode.disabled = true
+      self.icode.buttonType = "default"
     },
     sendSuccess: function() {
       var self = this
