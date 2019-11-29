@@ -34,9 +34,7 @@ Vue.use(Installer)
 
 // Axios
 import Axios from 'axios'
-// Axios.defaults.baseURL = 'http://192.168.0.108:8080/gene'
-// Axios.defaults.baseURL = 'http://118.190.55.164/gene'
-// Axios.defaults.baseURL = 'http://172.30.8.95:8080/gene'
+// Axios.defaults.baseURL = 'http://wxdev.genetopclinic.com/gene'
 Axios.defaults.baseURL = 'http://wxdev.hongyancloud.com/gene'
 Axios.interceptors.request.use(config => {
   let openId = common.cookie.get('open_id')

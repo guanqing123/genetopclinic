@@ -51,7 +51,7 @@
     <confirm v-model="icode.show" title="验证号码" class="confirm" confirmText="提交" :close-on-confirm="false" @on-confirm="finalCommit">
         <div>
             <cell title="手机号" :value="enroll.telephone"></cell>
-            <x-input class="weui-vcode" v-model="enroll.icode" :max="6" placeholder="请输入验证码">
+            <x-input @on-blur="icodeBlur" class="weui-vcode" v-model="enroll.icode" :max="6" placeholder="请输入验证码">
               <x-button ref="icode" slot="right" :type="icode.buttonType" :text="icode.buttonText" :disabled="icode.disabled" @click.native="getIcode" mini></x-button>
             </x-input>
         </div>
@@ -103,6 +103,9 @@ export default {
     }
   },
   methods: {
+    icodeBlur: function() {
+      window.scrollTo(0,0);
+    },
     getAddress: function (sure) {
       if (sure){
         let nameValue = this.$refs['address'].nameValue;
