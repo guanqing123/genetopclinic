@@ -30,12 +30,18 @@ export default [
           {
             path: 'Pass',
             name: 'Pass',
-            component: () => import('../components/personcenter/Pass')
+            component: () => import('../components/personcenter/Pass'),
+            meta: {
+              title: '个人中心'
+            }
           },
           {
             path: 'Refuse',
             name: 'Refuse',
-            component: () => import('../components/personcenter/Refuse')
+            component: () => import('../components/personcenter/Refuse'),
+            meta: {
+              title: '个人中心'
+            }
           }
         ],
         meta: {
