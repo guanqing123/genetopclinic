@@ -34,8 +34,7 @@ Vue.use(Installer)
 
 // Axios
 import Axios from 'axios'
-// Axios.defaults.baseURL = 'http://wxdev.genetopclinic.com/gene'
-Axios.defaults.baseURL = 'http://wxdev.hongyancloud.com/gene'
+Axios.defaults.baseURL = 'http://wxdev.genetopclinic.com/gene'
 Axios.interceptors.request.use(config => {
   let openId = common.cookie.get('open_id')
   if (openId) {
@@ -55,7 +54,7 @@ Vue.config.productionTip = false
 // 全局导航守卫
 router.beforeEach((to, from, next) => {
   if (common.isNull(common.cookie.get('open_id'))) {
-    var getOpenIdUrl = 'http://wxdev.hongyancloud.com/gene/getWxOpenId'
+    var getOpenIdUrl = 'http://wxdev.genetopclinic.com/gene/getWxOpenId'
     getOpenIdUrl += '?toUrl='+encodeURIComponent(window.location.href);
     var url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxb8b315d4406ae131&redirect_uri=' + encodeURIComponent(getOpenIdUrl) + '&response_type=code&scope=snsapi_base&state=123&connect_redirect=1#wechat_redirect';
     //授权请求,并跳转http://m.water.ui-tech.cn/auth路由页面
