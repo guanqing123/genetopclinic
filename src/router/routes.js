@@ -56,7 +56,7 @@ export default [
   {
     path: '/Project/:projectId',
     name: 'Project',
-    component: () => import('../components/project/Project'),
+    component: () => import('../components/project/Project.vue'),
     meta: {
       title: '项目详情'
     }

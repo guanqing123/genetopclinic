@@ -1,6 +1,8 @@
 <template>
   <div id="project" class="project">
-      <div class="special-banner">{{datas.xmmc}}</div>
+      <div class="special-banner">
+        <div class="banner-title">{{datas.xmmc}}</div>
+      </div>
       <div class="nav">
         <button-tab>
           <button-tab-item :selected="tabType === 'introduction'" @on-item-click="tabType = 'introduction'">项目介绍</button-tab-item>
@@ -68,16 +70,21 @@ export default {
   .special-banner {
     width: 100%;
     height: 160px;
-    line-height: 160px;
-    text-align: center;
-    font-size: 18px;
-    color: @white;
-    text-emphasis-color: @white;
     background-image: url("../../assets/bg-header.jpg");
     border-bottom: 10px solid @borderColor;
+    display: table;
     img {
       width: 100%;
       height: 100%;
+    }
+    .banner-title {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: center;
+      color: white;
+      font-size: 18px;
+      color: @white;
+      text-emphasis-color: @white;
     }
   }
   .nav {
