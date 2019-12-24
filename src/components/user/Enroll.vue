@@ -19,7 +19,7 @@
       <x-address ref="address" title="所在地区" popupTitle="所在地区" :raw-value="false" :list="addressData" placeholder="请选择" value-text-align="left" @on-hide="getAddress">
         <label slot="title" class="weui-label slot iconfont icon-bitian">所在地区：</label>
       </x-address>
-      <x-textarea title="详细地址：" v-model="enroll.detailAddress" placeholder="请填写" :show-counter="true" :rows="2" :max="50"></x-textarea>
+      <x-textarea v-show="false" title="详细地址：" v-model="enroll.detailAddress" placeholder="请填写" :show-counter="true" :rows="2" :max="50"></x-textarea>
       <x-textarea title="备注信息：" v-model="enroll.comment" placeholder="请填写" :show-counter="true" :rows="2" :max="50"></x-textarea>
     </group>
 
@@ -36,17 +36,30 @@
     </weui-uploader>
       <div class="weui-cell">
         <check-icon :value.sync="agree">我同意</check-icon>
-        <a href="javascript:;" @click="clickDeal" class="confirm">《某某协议》</a>
+        <a href="javascript:;" @click="clickDeal" class="confirm">《招募协议》</a>
       </div>
     </group>
     <confirm
       v-model="show"
       class="confirm"
-      title="xxx协议"
+      title="招募协议"
       cancelText="返回"
       confirmText="同意"
       @on-confirm="agreeDeal">
-      <div class="content">夏日总是燥热的，在这个偏僻的小山村，住着几百庄稼人，还有这排列整齐却显破旧的房屋。纵使夏日骄阳，汗流浃背，人们也不舍得休息。只有在一处房屋前，有几人在焦急的等待，里面还时不时的传出几声妇人的痛苦的呻吟声。没过多久，里面传来了婴儿的啼哭，所有人都松了一口气。就在所有人都认为一切已经皆大欢喜，准备办一场酒宴的时候，一阵骚乱传来，里面的孕妇血崩死了。有人在这个世上出生，就有人死亡，或许他的命运就是从此刻开始改变的.时间如流水般，静静地流淌，转瞬之间，已是十五年后，当初的婴孩也步入了少年时期，这个年纪，本该是肆意张扬，潇洒快活的时候，而少年却无法像同龄人一般肆意玩闹，他每天都很忙很累。不是像别人一样被敦促学习，对于他来说，学不学习都不重要了，因为将这高中读完，他就只能缀学回家，帮父母料理农活。实际上，从很久之前，他就开始下地干活了，每天除了学习之外，其余的时间都是在田野里度过的。时间如流水般，静静地流淌，转瞬之间，已是十五年后，当初的婴孩也步入了少年时期，这个年纪，本该是肆意张扬，潇洒快活的时候，而少年却无法像同龄人一般肆意玩闹，他每天都很忙很累。不是像别人一样被敦促学习，对于他来说，学不学习都不重要了，因为将这高中读完，他就只能缀学回家，帮父母料理农活。实际上，从很久之前，他就开始下地干活了，每天除了学习之外，其余的时间都是在田野里度过的。时间如流水般，静静地流淌，转瞬之间，已是十五年后，当初的婴孩也步入了少年时期，这个年纪，本该是肆意张扬，潇洒快活的时候，而少年却无法像同龄人一般肆意玩闹，他每天都很忙很累。不是像别人一样被敦促学习，对于他来说，学不学习都不重要了，因为将这高中读完，他就只能缀学回家，帮父母料理农活。实际上，从很久之前，他就开始下地干活了，每天除了学习之外，其余的时间都是在田野里度过的。</div>
+      <div class="content">
+        服务声明（致患者或患者家属的一封信）<br/><br/>
+        尊敬的患者或患者家属：<br/><br/>
+        欢迎您登录和使用本平台，本患者服务声明旨在告诉您本平台“全球寻药联盟”如何为患者服务。在使用本平台服务之前，请务必阅读本服务声明之全部内容。使用本平台必须遵守《中华人民共和国药品管理法》《药品注册管理办法》《药物临床试验质量管理规范 GCP》《赫尔辛基宣言》伦理原则等相关法律、法规、及本平台隐私保护制度的规定。使用本平台的服务，您会被视为已清楚知晓并认可本患者服务声明之全部内容。声明内容如下：<br/>
+        1、全球寻药联盟旨在公益性地帮助患者寻找、咨询、匹配适合的临床试验项目。<br/>
+        2、患者或患者家属是知晓临床试验并自愿委托全球寻药联盟帮助寻找、咨询、匹配适合的临床试验项目。<br/>
+        3、全球寻药联盟不会以任何形式和名义向患者收取咨询费、中介费等任何费用。<br/>
+        4、全球寻药联盟不会以任何形式和名义诱导患者进行任何的医疗措施和/或任何的医学检验/检查。<br/>
+        5、全球寻药联盟不会以返高额报酬的形式引诱患者参加临床试验。<br/>
+        6、患者或患者家属是知晓并认可本平台服务的性质及所有内容，而自愿向全球寻药联盟提供患者真实、正确、最新及完整的病历资料等信息的。<br/>
+        7、全球寻药联盟遵守公司的隐私保护原则，患者所有资料信息仅供寻找、咨询、匹配适合的临床试验项目。<br/>
+        8、全球寻药联盟可能会应法律之要求公开个人资料，或者因善意确信这样的作法对于下列各项有其必要性：1)符合法律公告；2)在紧急情况下，为了保护本平台及其服务个人或公众安全。<br/>
+        9、如任何个人和/或组织以全球寻药联盟的名义，向患者收取咨询等费用或引诱患者做任何附加检测/检查，全球寻药联盟将依法追究其法律责任。<br/>
+      </div>
     </confirm>
     <confirm v-model="icode.show" title="验证号码" class="confirm" confirmText="提交" :close-on-confirm="false" @on-confirm="finalCommit">
         <div>
@@ -296,7 +309,8 @@ export default {
     color: rgb(60,176,52);
   }
   .content {
-    height: 200px;
+    height: 300px;
+    text-align: left;
     overflow: scroll;
   }
 }

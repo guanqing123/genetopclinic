@@ -7,7 +7,7 @@
         <cell title="年龄" :value="enroll.age"></cell>
         <cell title="所患疾病" primary="content" :value="enroll.disease"></cell>
         <cell title="所在地区" :value="address"></cell>
-        <cell title="详细地址" primary="content" :value="enroll.detailAddress"></cell>
+        <cell title="详细地址" primary="content" v-show="false" :value="enroll.detailAddress"></cell>
         <cell primary="content" title="备注信息" :value="enroll.comment"></cell>
     </group>
     <group label-width="5em" title="附件信息">
