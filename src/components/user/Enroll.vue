@@ -36,18 +36,18 @@
     </weui-uploader>
       <div class="weui-cell">
         <check-icon :value.sync="agree">我同意</check-icon>
-        <a href="javascript:;" @click="clickDeal" class="confirm">《招募协议》</a>
+        <a href="javascript:;" @click="clickDeal" class="confirm">《服务声明》</a>
       </div>
     </group>
     <confirm
       v-model="show"
       class="confirm"
-      title="招募协议"
+      title="服务声明"
       cancelText="返回"
       confirmText="同意"
       @on-confirm="agreeDeal">
       <div class="content">
-        服务声明（致患者或患者家属的一封信）<br/><br/>
+        致患者和患者家属的一封信<br/><br/>
         尊敬的患者或患者家属：<br/><br/>
         欢迎您登录和使用本平台，本患者服务声明旨在告诉您本平台“全球寻药联盟”如何为患者服务。在使用本平台服务之前，请务必阅读本服务声明之全部内容。使用本平台必须遵守《中华人民共和国药品管理法》《药品注册管理办法》《药物临床试验质量管理规范 GCP》《赫尔辛基宣言》伦理原则等相关法律、法规、及本平台隐私保护制度的规定。使用本平台的服务，您会被视为已清楚知晓并认可本患者服务声明之全部内容。声明内容如下：<br/>
         1、全球寻药联盟旨在公益性地帮助患者寻找、咨询、匹配适合的临床试验项目。<br/>
